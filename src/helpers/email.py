@@ -12,7 +12,7 @@ async def send(receiver: str, division: str, token: str):
     <div>Selamat!</div>
     <div>Anda telah diterima sebagai anggota ORBIT di divisi {division}. Untuk selanjutnya, silahkan verifikasi akun menggunakan link berikut:</div>
     <br>
-    <a href={config["CLIENT_URL"]}/register/{token}>Verifikasi sekarang</a>
+    <a href="{config['CLIENT_URL']}/register/{token}">Verifikasi sekarang</a>
     <br><br>
     <div>Diharapkan untuk segera melakukan verifikasi akun.</div>
     <br>

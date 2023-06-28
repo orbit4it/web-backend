@@ -5,7 +5,7 @@ Backend GraphQL API untuk web Orbit.
 ## Menjalankan server
 
 1. Clone repository ini
-2. buat .env file ([Lihat contoh](https://github.com/orbit4it/web-backend/blob/main/.env.example))
+2. Buat .env file ([Lihat contoh](https://github.com/orbit4it/web-backend/blob/main/.env.example))
 3. Install dependensi & jalankan server:
 
 ```

@@ -17,7 +17,12 @@ class UserPending:
     email: str
     motivation: str
     nis: str
-    token: str
+    registration_token: str
     expired_at: datetime
     division_id: int
     grade_id: int
+
+@strawberry.type
+class Token:
+    access_token: str
+    refresh_token: str
