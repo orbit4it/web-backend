@@ -26,7 +26,7 @@ class User(Base):
     created_at = Column(DateTime, default=func.now())
 
     division_id = Column(Integer)
-    classes_id = Column(Integer)
+    grade_id = Column(Integer)
 
 class UserPending(Base):
     __tablename__ = "users_pending"
@@ -40,4 +40,4 @@ class UserPending(Base):
     expired_at = Column(DateTime)
 
     division_id = Column(Integer)
-    classes_id = Column(Integer)
+    grade_id = Column(Integer)
