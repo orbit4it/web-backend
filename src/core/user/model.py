@@ -1,7 +1,8 @@
 import uuid
 import enum
 
-from sqlalchemy import Column, DateTime, Integer, String, Enum, Text, func
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Enum, Text, func
+from sqlalchemy.orm import relationship
 
 from src.db.session import Base
 
@@ -25,19 +26,25 @@ class User(Base):
     phone_number = Column(String(13))
     created_at = Column(DateTime, default=func.now())
 
-    division_id = Column(Integer)
-    grade_id = Column(Integer)
+    division_id = Column(Integer, ForeignKey("divisions.id"))
+    division = relationship("Division", back_populates="members")
+
+    grade_id = Column(Integer, ForeignKey("grades.id"))
+    grade = relationship("Grade", back_populates="students")
 
 class UserPending(Base):
     __tablename__ = "users_pending"
 
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
-    email = Column(String(255), unique=True, nullable=False)
+    email = Column(String(255), nullable=False)
     motivation = Column(Text, nullable=False)
     nis = Column(String(10))
     token = Column(String(64))
     expired_at = Column(DateTime)
 
-    division_id = Column(Integer)
-    grade_id = Column(Integer)
+    division_id = Column(Integer, ForeignKey("divisions.id"))
+    division = relationship("Division")
+
+    grade_id = Column(Integer, ForeignKey("grades.id"))
+    grade = relationship("Grade")

@@ -1,6 +1,7 @@
 import enum
 
 from sqlalchemy import Column, Enum, Integer, String
+from sqlalchemy.orm import relationship
 from src.db.session import Base
 
 class GradeLevel(enum.Enum):
@@ -20,3 +21,5 @@ class Grade(Base):
     grade = Column(Enum(GradeLevel), nullable=False)
     vocational = Column(Enum(Vocational), nullable=False)
     name = Column(String(12), nullable=False)
+
+    students = relationship("User", back_populates="grade")

@@ -19,7 +19,7 @@ def seed_database():
 
     division = Division(
         name="Game Development",
-        wa_group_links="https://whatsapp.com",
+        wa_group_link="https://whatsapp.com",
     )
 
     user_pending = UserPending(
