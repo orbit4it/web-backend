@@ -59,3 +59,23 @@ class Mutation:
 
             db.rollback()
             return Error("Terjadi kesalahan")
+        
+    
+    # permission: admin, superadmin
+    @strawberry.mutation
+    def del_division(self, info: Info, id: int) -> Success | Error:
+        db: Session = info.context["db"]
+
+        try:
+            query = db.query(model.Division).filter(model.Division.id == id)
+            count = query.count()
+            query.delete()
+
+            db.commit()
+
+            return Success(f"{count} divisi berhasil dihapus")
+        except IntegrityError as e:
+            print(e)
+
+            db.rollback()
+            return Error("Terjadi kesalahan")
