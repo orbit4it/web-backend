@@ -4,3 +4,10 @@
 # 2. edit_schedule : ubah row data dengan parameter id dan skema
 # 3. del_schedule : hapus row data dengan parameter id
 # 4. toggle_attendance_open : ubah value attendance_is_open menjadi False maupun True dengan parameter id
+
+import strawberry
+
+
+@strawberry.type
+class Mutation:
+    ...
