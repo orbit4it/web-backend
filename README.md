@@ -21,12 +21,10 @@ Drop semua table:
 
 ```
 python script.py drop-all
-
 ```
 
 Seeder (create data dummy):
 
 ```
 python script.py seed
-
 ```

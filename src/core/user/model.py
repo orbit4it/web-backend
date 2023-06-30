@@ -19,7 +19,7 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
     profile_picture = Column(String(255))
-    role = Column(Enum(Role), nullable=False, default=Role.user)
+    role = Column(Enum(Role), nullable=False, default=Role.user.value)
     nis = Column(String(10), unique=True)
     refresh_token = Column(String(64), nullable=False)
     score = Column(Integer, default=0)
