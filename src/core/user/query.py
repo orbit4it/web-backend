@@ -36,3 +36,23 @@ class Query:
         )
 
         return type.Token(access_token=token)
+
+    @strawberry.mutation
+    def refresh_token(self, info: Info) -> type.Token | Error:
+        cookies = info.context["request"].cookies
+        db: Session = info.context["db"]
+
+        if "refresh_token" not in cookies:
+            return Error("Refresh token tidak ditemukan")
+
+        user = db.query(model.User).filter(model.User.refresh_token == cookies["refresh_token"]).first()
+        if user is None:
+            return Error("Refresh token tidak valid")
+
+        token = jwt.encode(
+            str(user.id),
+            str(user.role.name),
+            user.division_id, # type: ignore
+        )
+
+        return type.Token(access_token=token)
