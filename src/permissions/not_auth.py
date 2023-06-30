@@ -7,8 +7,4 @@ class NotAuth(BasePermission):
 
     def has_permission(self, source, info: Info, **kwargs) -> bool:
         cookies = info.context["request"].cookies
-
-        if not "refresh_token" in cookies:
-            return True
-
-        return False
+        return not "refresh_token" in cookies
