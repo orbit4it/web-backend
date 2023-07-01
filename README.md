@@ -28,3 +28,12 @@ Seeder (insert dummy data):
 ```
 python script.py seed
 ```
+
+## Testing
+
+Please create unit tests for each feature you add. Test for successful, failed, and invalid cases. (for now, just test the GraphQL). To run unit tests use this command:
+
+```
+pytest
+```
+
