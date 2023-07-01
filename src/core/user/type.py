@@ -1,5 +1,7 @@
-from datetime import datetime
 import strawberry
+
+from datetime import datetime
+
 
 @strawberry.input
 class UserPendingInput:
@@ -9,6 +11,7 @@ class UserPendingInput:
     nis: str
     division_id: int
     grade_id: int
+
 
 @strawberry.type
 class UserPending:
@@ -21,6 +24,7 @@ class UserPending:
     expired_at: datetime
     division_id: int
     grade_id: int
+
 
 @strawberry.type
 class Token:

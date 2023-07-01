@@ -7,6 +7,7 @@ from strawberry.types import Info
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
+from src.permissions import AdminAuth
 from src.helpers import token, email
 from src.helpers.types import Success, Error
 from . import model, type
@@ -65,6 +66,7 @@ class Mutation:
             return Success("Registrasi berhasil, kamu bisa login sekarang!")
 
         except IntegrityError as e:
+            db.rollback()
             if "for key 'email'" in str(e):
                 return Error("Email sudah digunakan")
             elif "for key 'nis'" in str(e):
@@ -74,7 +76,7 @@ class Mutation:
 
 
     # permission: admin, superadmin
-    @strawberry.mutation
+    @strawberry.mutation(permission_classes=[AdminAuth])
     async def confirm_user(self, info: Info, id: int) -> Success | Error:
         db: Session = info.context["db"]
 
@@ -88,6 +90,7 @@ class Mutation:
 
         user_pending = query.first()
         if user_pending is None:
+            db.rollback()
             return Error("User pending tidak ditemukan")
 
         asyncio.create_task(email.send(
