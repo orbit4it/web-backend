@@ -1,5 +1,5 @@
 import strawberry
-import setup
+import tests.setup
 
 from strawberry.extensions import SchemaExtension
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock, mock
@@ -7,7 +7,8 @@ from mock_alchemy.mocking import UnifiedAlchemyMagicMock, mock
 from src.core.user import Query, Mutation
 from src.core.user.model import User, Role
 from src.core.division.model import Division
-from src.core.grade.model import Grade, GradeLevel, Vocational
+from src.core.grade.model import Grade
+from src.core.grade.type import GradeLevel, Vocational
 
 
 session_mock = UnifiedAlchemyMagicMock(data=[

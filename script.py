@@ -6,7 +6,8 @@ if len(sys.argv) < 2:
 def seed_database():
     from src.db import Session, tables
     from src.core.user.model import User, UserPending, Role
-    from src.core.grade.model import Grade, GradeLevel, Vocational
+    from src.core.grade.model import Grade
+    from src.core.grade.type import GradeLevel, Vocational
     from src.core.division.model import Division
 
     db = Session()
