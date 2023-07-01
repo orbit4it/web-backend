@@ -13,8 +13,11 @@ from . import model, type
 @strawberry.type
 class Query:
 
+    # permission: *
     @strawberry.field(permission_classes=[NotAuth])
-    def user_auth(self, info: Info, email: str, password: str) -> type.Token | Error:
+    def user_auth(
+        self, info: Info, email: str, password: str
+    ) -> type.Token | Error:
         db: Session = info.context["db"]
 
         user = db.query(model.User).filter(model.User.email == email).first()
@@ -37,6 +40,8 @@ class Query:
 
         return type.Token(access_token=token)
 
+
+    # permission: *
     @strawberry.mutation
     def refresh_token(self, info: Info) -> type.Token | Error:
         cookies = info.context["request"].cookies
@@ -45,7 +50,10 @@ class Query:
         if "refresh_token" not in cookies:
             return Error("Refresh token tidak ditemukan")
 
-        user = db.query(model.User).filter(model.User.refresh_token == cookies["refresh_token"]).first()
+        user = (db.query(model.User)
+            .filter(model.User.refresh_token == cookies["refresh_token"])
+            .first())
+
         if user is None:
             return Error("Refresh token tidak valid")
 

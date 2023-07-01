@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .config import config
 from .schema import graphql_app
 
+
 app = FastAPI()
 
 app.add_middleware(

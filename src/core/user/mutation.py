@@ -11,11 +11,15 @@ from src.helpers import token, email
 from src.helpers.types import Success, Error
 from . import model, type
 
+
 @strawberry.type
 class Mutation:
 
+    # permission: *
     @strawberry.mutation
-    def create_user_pending(self, info: Info, user_pending: type.UserPendingInput) -> Success:
+    def create_user_pending(
+        self, info: Info, user_pending: type.UserPendingInput
+    ) -> Success:
         db: Session = info.context["db"]
 
         user_pending_db = model.UserPending(**vars(user_pending))
@@ -24,14 +28,20 @@ class Mutation:
 
         return Success("Akun sedang diverifikasi, mohon tunggu email verifikasi")
 
+
+    # permission: *
     @strawberry.mutation
-    def create_user(self, info: Info, registration_token: str, password: str) -> Success | Error:
+    def create_user(
+        self, info: Info, registration_token: str, password: str
+    ) -> Success | Error:
         db: Session = info.context["db"]
 
         if len(password) < 8:
             return Error("Password minimal 8 karakter")
 
-        user_pending_query = db.query(model.UserPending).filter(model.UserPending.registration_token == registration_token)
+        user_pending_query = (db.query(model.UserPending)
+            .filter(model.UserPending.registration_token == registration_token))
+
         user_pending = user_pending_query.first()
 
         if user_pending is None or user_pending.expired_at < datetime.now(): # type: ignore
@@ -62,9 +72,12 @@ class Mutation:
 
             return Error("Terjadi kesalahan")
 
+
+    # permission: admin, superadmin
     @strawberry.mutation
     async def confirm_user(self, info: Info, id: int) -> Success | Error:
         db: Session = info.context["db"]
+
         registration_token = token.generate(64)
         query = db.query(model.UserPending).filter(model.UserPending.id == id)
         query.update({

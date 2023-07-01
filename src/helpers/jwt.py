@@ -14,9 +14,14 @@ def encode(user_id: str, role: str, division_id: int):
 
     return jwt.encode(payload, str(config["SECRET_KEY"]), algorithm="HS256")
 
+
 def decode(token: str) -> dict:
     try:
-        payload = jwt.decode(token, str(config["SECRET_KEY"]), algorithms="HS256")
+        payload = jwt.decode(
+            token,
+            str(config["SECRET_KEY"]),
+            algorithms="HS256"
+        )
         if "sub" and "role" and "div" and "exp" not in payload:
             raise Exception
     except:

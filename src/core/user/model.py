@@ -6,10 +6,12 @@ from sqlalchemy.orm import relationship
 
 from src.db.session import Base
 
+
 class Role(enum.Enum):
     superadmin = "superadmin"
     admin = "admin"
     user = "user"
+
 
 class User(Base):
     __tablename__ = "users"
@@ -32,6 +34,7 @@ class User(Base):
 
     grade_id = Column(Integer, ForeignKey("grades.id"))
     grade = relationship("Grade", back_populates="students")
+
 
 class UserPending(Base):
     __tablename__ = "users_pending"

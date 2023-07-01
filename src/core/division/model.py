@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 from src.db.session import Base
 
+
 class Division(Base):
     __tablename__ = "divisions"
 
