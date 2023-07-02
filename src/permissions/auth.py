@@ -5,7 +5,7 @@ from src.helpers import jwt
 
 
 class BaseAuth(BasePermission):
-    message = "User is not authenticated"
+    message = "Request tidak diperbolehkan"
     allowed_roles = ()
 
     def has_permission(self, source, info: Info, **kwargs) -> bool:

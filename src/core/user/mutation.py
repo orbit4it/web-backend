@@ -7,7 +7,7 @@ from strawberry.types import Info
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from src.permissions import AdminAuth
+from src.permissions import AdminAuth, NotAuth
 from src.helpers import token, email
 from src.helpers.types import Success, Error
 from . import model, type
@@ -16,8 +16,7 @@ from . import model, type
 @strawberry.type
 class Mutation:
 
-    # permission: *
-    @strawberry.mutation
+    @strawberry.mutation(permission_classes=[NotAuth])
     def create_user_pending(
         self, info: Info, user_pending: type.UserPendingInput
     ) -> Success:
@@ -30,8 +29,7 @@ class Mutation:
         return Success("Akun sedang diverifikasi, mohon tunggu email verifikasi")
 
 
-    # permission: *
-    @strawberry.mutation
+    @strawberry.mutation(permission_classes=[NotAuth])
     def create_user(
         self, info: Info, registration_token: str, password: str
     ) -> Success | Error:

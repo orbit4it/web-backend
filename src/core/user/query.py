@@ -13,7 +13,6 @@ from . import model, type
 @strawberry.type
 class Query:
 
-    # permission: *
     @strawberry.field(permission_classes=[NotAuth])
     def user_auth(
         self, info: Info, email: str, password: str

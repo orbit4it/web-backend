@@ -1,6 +1,7 @@
 import strawberry
 import tests.setup
 
+from dataclasses import dataclass
 from strawberry.extensions import SchemaExtension
 from mock_alchemy.mocking import UnifiedAlchemyMagicMock, mock
 
@@ -75,7 +76,12 @@ def test_create_user_pending():
     }
     """
 
-    result = schema.execute_sync(query, context_value={})
+    @dataclass
+    class Request():
+        cookies: dict
+        headers: dict
+    request = Request(cookies={}, headers={})
+    result = schema.execute_sync(query, context_value={"request": request})
 
     assert result.errors is None
     assert result.data["createUserPending"] == { # type: ignore
