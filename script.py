@@ -4,11 +4,11 @@ if len(sys.argv) < 2:
     exit()
 
 def seed_database():
-    from src.db import Session, tables
-    from src.core.user.model import User, UserPending, Role
+    from src.core.division.model import Division
     from src.core.grade.model import Grade
     from src.core.grade.type import GradeLevel, Vocational
-    from src.core.division.model import Division
+    from src.core.user.model import Role, User, UserPending
+    from src.db import Session, tables
 
     db = Session()
 
