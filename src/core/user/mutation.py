@@ -10,6 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from src.permissions import AdminAuth, NotAuth
 from src.helpers import token, email
 from src.helpers.types import Success, Error
+from src.helpers.validation import ValidationError, validate_user_pending
 from . import model, type
 
 
@@ -19,8 +20,13 @@ class Mutation:
     @strawberry.mutation(permission_classes=[NotAuth])
     def create_user_pending(
         self, info: Info, user_pending: type.UserPendingInput
-    ) -> Success:
+    ) -> Success | Error:
         db: Session = info.context["db"]
+
+        try:
+            validate_user_pending(user_pending)
+        except ValidationError as e:
+            return Error(str(e))
 
         user_pending_db = model.UserPending(**vars(user_pending))
         db.add(user_pending_db)
