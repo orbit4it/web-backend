@@ -25,7 +25,7 @@ def max_len(name: str, input: str, max: int):
 
 def not_empty(name: str, input: str):
     if not input:
-        raise ValidationError(name, f"tidak boleh kosong")
+        raise ValidationError(name, "tidak boleh kosong")
 
 
 def valid_email(email: str):
@@ -50,9 +50,3 @@ def validate_user_pending(user_pending: UserPendingInput):
 
     except ValidationError as e:
         raise e
-
-
-
-
-
-
