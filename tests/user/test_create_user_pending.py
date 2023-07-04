@@ -1,9 +1,27 @@
-from tests.setup import (
-    Request,
-    Case,
-    schema,
-    session_mock,
-    UserPending,
+import strawberry
+
+from strawberry.extensions import SchemaExtension
+from mock_alchemy.mocking import UnifiedAlchemyMagicMock
+
+from src.core.user import Query, Mutation
+from src.core.user.model import UserPending
+from src.core.division.model import Division # pyright: ignore
+from src.core.grade.model import Grade # pyright: ignore
+from tests.setup import Request, Case
+
+
+session_mock = UnifiedAlchemyMagicMock()
+
+
+class MockExtension(SchemaExtension):
+    def on_operation(self):
+        self.execution_context.context["db"] = session_mock
+
+
+schema = strawberry.Schema(
+    query=Query,
+    mutation=Mutation,
+    extensions=[MockExtension]
 )
 
 
@@ -57,7 +75,7 @@ def test_create_user_pending():
             expected={
                 "errors": True,
                 "data": None,
-                "count": 0
+                "count": 1
             }
         ),
         Case(
@@ -74,7 +92,7 @@ def test_create_user_pending():
                         "Email tidak valid"
                     }
                 },
-                "count": 0
+                "count": 1
             }
         ),
     ]

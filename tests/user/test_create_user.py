@@ -1,9 +1,46 @@
-from tests.setup import (
-    Request,
-    Case,
-    schema,
-    session_mock,
-    User,
+import strawberry
+
+from datetime import datetime, timedelta
+from strawberry.extensions import SchemaExtension
+from mock_alchemy.mocking import UnifiedAlchemyMagicMock, mock
+
+from src.schema import Query, Mutation
+from src.core.user.model import User, UserPending
+from src.core.division.model import Division # pyright: ignore
+from src.core.grade.model import Grade # pyright: ignore
+from tests.setup import Request, Case
+
+
+session_mock = UnifiedAlchemyMagicMock(data=[
+    (
+        [
+            mock.call.query(UserPending),
+            mock.call.filter(UserPending.registration_token == "token")
+        ],
+        [
+            UserPending(
+                name="John Doe",
+                email="johndoe@gmail.com",
+                motivation="Here is my motivation",
+                registration_token="token",
+                expired_at=datetime.now() + timedelta(days=7),
+                division_id=1,
+                grade_id=1
+            )
+        ]
+    )
+])
+
+
+class MockExtension(SchemaExtension):
+    def on_operation(self):
+        self.execution_context.context["db"] = session_mock
+
+
+schema = strawberry.Schema(
+    query=Query,
+    mutation=Mutation,
+    extensions=[MockExtension]
 )
 
 
@@ -52,7 +89,7 @@ def test_create_user():
                         "error": "Token registrasi tidak valid"
                     }
                 },
-                "count": 0,
+                "count": 1,
             }
         ),
         Case(
@@ -67,7 +104,7 @@ def test_create_user():
                         "error": "Password minimal 8 karakter"
                     }
                 },
-                "count": 0,
+                "count": 1,
             }
         ),
     ]
