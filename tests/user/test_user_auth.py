@@ -15,11 +15,13 @@ data = [
         ],
         [
             User(
+                id="1",
                 name="John Doe",
                 email="johndoe@gmail.com",
                 password=bcrypt.hash("password"),
                 role=Role.user,
-                nis="123456"
+                nis="123456",
+                division_id=1
             )
         ]
     )
@@ -50,7 +52,8 @@ data = [
             },
             {
                 "is_error": False,
-                "return_type": "Error"
+                "return_type": "Error",
+                "error": "Email/Password salah"
             }
         ),
         (
@@ -62,7 +65,8 @@ data = [
             },
             {
                 "is_error": False,
-                "return_type": "Error"
+                "return_type": "Error",
+                "error": "Email/Password salah"
             }
         ),
         (
@@ -121,7 +125,17 @@ def test_user_auth(mock: Mock, input, expected):
 
     if expected["return_type"] == "Token":
         assert "accessToken" in result.data["userAuth"] # type: ignore
+
+        try:
+            payload = jwt.decode(result.data["userAuth"]["accessToken"]) # type: ignore
+            assert payload["sub"] == "1"
+            assert payload["role"] == "user"
+            assert payload["div"] == 1
+        except:
+            assert False
+
     elif expected["return_type"] == "Error":
         assert "error" in result.data["userAuth"] # type: ignore
+        assert result.data["userAuth"]["error"] == expected["error"] # type: ignore
     else:
         assert result.data == None

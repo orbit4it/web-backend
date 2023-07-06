@@ -106,3 +106,4 @@ def test_refresh_token(mock: Mock, input, expected):
 
     elif expected["return_type"] == "Error":
         assert "error" in result.data["refreshToken"] # type: ignore
+        assert result.data["refreshToken"]["error"] == expected["error"] # type: ignore
