@@ -84,18 +84,19 @@ class Mutation:
     async def confirm_user(self, info: Info, id: int) -> Success | Error:
         db: Session = info.context["db"]
 
-        registration_token = token.generate(64)
         query = db.query(model.UserPending).filter(model.UserPending.id == id)
-        query.update({
-            model.UserPending.registration_token: registration_token,
-            model.UserPending.expired_at: datetime.now() + timedelta(days=7)
-        }) # type: ignore
-        db.commit()
 
         user_pending = query.first()
         if user_pending is None:
             db.rollback()
             return Error("User pending tidak ditemukan")
+
+        registration_token = token.generate(64)
+        query.update({
+            model.UserPending.registration_token: registration_token,
+            model.UserPending.expired_at: datetime.now() + timedelta(days=7)
+        }) # type: ignore
+        db.commit()
 
         asyncio.create_task(email.send(
             user_pending.email, # type: ignore
