@@ -1,15 +1,15 @@
-import strawberry
 import asyncio
+import strawberry
 
 from datetime import datetime, timedelta
 from passlib.hash import bcrypt
-from strawberry.types import Info
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+from strawberry.types import Info
 
-from src.permissions import AdminAuth, NotAuth
-from src.helpers import token, email
-from src.helpers.types import Success, Error
+from src.helpers import email, token
+from src.helpers.types import Error, Success
+from src.permissions import AdminAuth, NotAuth, SuperAdminAuth
 from src.helpers.validation import ValidationError, validate_user_pending
 from . import model, type
 
@@ -105,3 +105,135 @@ class Mutation:
         ))
 
         return Success("Mengirim email verifikasi")
+    
+
+    @strawberry.mutation(permission_classes=[AdminAuth])
+    def delete_pending_user(self, info: Info, id:int)-> Success | Error:
+        db: Session = info.context["db"]
+        try:
+            query = db.query(model.UserPending).filter(model.UserPending.id == id).first()
+            if query is None:
+                return Error('User tidak ditemukan')
+            db.delete(query)
+            db.commit()
+
+        except IntegrityError as e:
+            db.rollback()
+            return Error(f'Eror menghapus: {e}')
+        
+        except Exception as e:
+            db.rollback()
+            return Error(f'Eror menghapus: {e}')
+        
+        return Success('Pending User berhasil dihapus')
+    
+
+    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    def delete_user(self, info: Info, id:str)-> Success | Error:
+        db: Session = info.context["db"]
+        try:
+            query = db.query(model.User).filter(model.User.id == id).first()
+            if query is None:
+                return Error('User tidak ditemukan')
+            db.delete(query)
+            db.commit()
+
+        except IntegrityError as e:
+            db.rollback()
+            return Error(f'Eror menghapus: {e}')
+        
+        except Exception as e:
+            db.rollback()
+            return Error(f'Eror menghapus: {e}')
+        
+        return Success(' User berhasil dihapus')
+    
+
+    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    def promote_user(self, info: Info, id:str)-> Success | Error:
+        db: Session = info.context["db"]
+        try: 
+            query = db.query(model.User).filter(model.User.id == id).first()
+
+            if query is None:
+                return Error(f"Tidak ada user dengan Id:  {id}")
+        
+            query.role = 'admin'
+            db.commit()
+
+        except IntegrityError as e:
+            db.rollback()
+            return Error(f"Gagal menaikan user: {e} ditemukan")
+        
+        except Exception as e: 
+            db.rollback()
+            return Error(f"Gagal menaikan user: {e} ditemukan")
+        return Success('Berhasil menaikan user')
+    
+
+    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    def demote_admin(self, info: Info, id:str)-> Success | Error:
+        db: Session = info.context["db"]
+        try: 
+            query = db.query(model.User).filter(model.User.id == id).first()
+
+            if query is None:
+                return Error(f"Tidak ada user dengan Id: {id}")
+        
+            query.role = 'user'
+            db.commit()
+
+        except IntegrityError as e:
+            db.rollback()
+            return Error(f"Gagal menurunkan admin: {e} ditemukan")
+        
+        except Exception as e: 
+            db.rollback()
+            return Error(f"Gagal menurunkan admin: {e} ditemukan")
+        return Success('Berhasil menurunkan admin')
+    
+
+    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    def promote_admin(self, info: Info, id:str)-> Success | Error:
+        db: Session = info.context["db"]
+        try: 
+            query = db.query(model.User).filter(model.User.id == id).first()
+
+            if query is None:
+                return Error(f"Tidak ada user dengan Id: {id}")
+        
+            query.role = 'superadmin'
+            db.commit()
+
+        except IntegrityError as e:
+            db.rollback()
+            return Error(f"Gagal menaikan admin: {e} ditemukan")
+        
+        except Exception as e: 
+            db.rollback()
+            return Error(f"Gagal menikan admin: {e} ditemukan")
+        return Success('Berhasil menaikan admin')
+    
+
+    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    def demote_super_admin(self, info: Info, id:str)-> Success | Error:
+        db: Session = info.context["db"]
+        try: 
+            query = db.query(model.User).filter(model.User.id == id).first()
+
+            if query is None:
+                return Error(f"Tidak ada user dengan Id: {id}")
+            
+            query.role = 'admin'
+            db.commit()
+
+        except IntegrityError as e:
+            db.rollback()
+            return Error(f"Gagal menurunkan superadmin: {e} ditemukan")
+        
+        except Exception as e: 
+            db.rollback()
+            return Error(f"Gagal menurunkan superadmin: {e} ditemukan")
+        return Success('Berhasil menurunkan superadmin')
+
+    
