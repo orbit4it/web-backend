@@ -1,7 +1,7 @@
 import asyncio
-from datetime import datetime, timedelta
-
 import strawberry
+
+from datetime import datetime, timedelta
 from passlib.hash import bcrypt
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -10,19 +10,23 @@ from strawberry.types import Info
 from src.helpers import email, token
 from src.helpers.types import Error, Success
 from src.permissions import AdminAuth, NotAuth, SuperAdminAuth
-
+from src.helpers.validation import ValidationError, validate_user_pending
 from . import model, type
 
 
 @strawberry.type
 class Mutation:
 
-
     @strawberry.mutation(permission_classes=[NotAuth])
     def create_user_pending(
         self, info: Info, user_pending: type.UserPendingInput
-    ) -> Success:
+    ) -> Success | Error:
         db: Session = info.context["db"]
+
+        try:
+            validate_user_pending(user_pending)
+        except ValidationError as e:
+            return Error(str(e))
 
         user_pending_db = model.UserPending(**vars(user_pending))
         db.add(user_pending_db)
@@ -80,18 +84,19 @@ class Mutation:
     async def confirm_user(self, info: Info, id: int) -> Success | Error:
         db: Session = info.context["db"]
 
-        registration_token = token.generate(64)
         query = db.query(model.UserPending).filter(model.UserPending.id == id)
-        query.update({
-            model.UserPending.registration_token: registration_token,
-            model.UserPending.expired_at: datetime.now() + timedelta(days=7)
-        }) # type: ignore
-        db.commit()
 
         user_pending = query.first()
         if user_pending is None:
             db.rollback()
             return Error("User pending tidak ditemukan")
+
+        registration_token = token.generate(64)
+        query.update({
+            model.UserPending.registration_token: registration_token,
+            model.UserPending.expired_at: datetime.now() + timedelta(days=7)
+        }) # type: ignore
+        db.commit()
 
         asyncio.create_task(email.send(
             user_pending.email, # type: ignore
