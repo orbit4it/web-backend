@@ -4,7 +4,7 @@ import strawberry
 from sqlalchemy.orm import Session
 from strawberry.types import Info
 
-from src.permissions import NotAuth
+from src.permissions import NotAuth, UserAuth
 from src.helpers.types import Error
 from src.helpers import jwt
 from . import model, type
@@ -40,8 +40,7 @@ class Query:
         return type.Token(access_token=token)
 
 
-    # permission: *
-    @strawberry.mutation
+    @strawberry.field(permission_classes=[UserAuth])
     def refresh_token(self, info: Info) -> type.Token | Error:
         cookies = info.context["request"].cookies
         db: Session = info.context["db"]

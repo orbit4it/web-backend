@@ -82,9 +82,9 @@ data = [
         ),
     ],
     ids=[
-        "Success confirm user",
-        "Error id not found",
-        "Error not admin"
+        "success: confirm user",
+        "error: id not found",
+        "error: not admin"
     ],
     indirect=["mock"]
 )

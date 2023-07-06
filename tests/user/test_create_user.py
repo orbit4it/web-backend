@@ -78,9 +78,9 @@ data = [
         ),
     ],
     ids=[
-        "Success create user",
-        "Error token not found",
-        "Invalid password"
+        "success: create user",
+        "error: token not found",
+        "invalid: password"
     ],
     indirect=["mock"]
 )

@@ -37,14 +37,12 @@ class Mock():
         self.session = session
         self.schema = schema
 
-class Case():
-    def __init__(self, name: str,  input: dict, expected: dict):
-        self.name = name
-        self.input = input
-        self.expected = expected
-
 
 class Request():
     def __init__(self, headers: dict = {}, cookies: dict = {}):
         self.headers = headers
         self.cookies = cookies
+
+class Response():
+    def set_cookie(self, key, value, httponly):
+        ...

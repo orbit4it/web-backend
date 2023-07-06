@@ -56,9 +56,9 @@ from tests.setup import Mock, Request, mock # pyright: ignore
         ),
     ],
     ids=[
-        "Success create user pending",
-        "Error user has already logged in",
-        "Invalid email"
+        "success: create user pending",
+        "error: user has already logged in",
+        "invalid: email"
     ]
 )
 def test_create_user_pending(mock: Mock, input, expected):
