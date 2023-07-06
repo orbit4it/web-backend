@@ -21,7 +21,7 @@ class Mutation:
     ...
     @strawberry.mutation
     def create_schedule(
-        self, info: Info, schedule: type.NewScheduleInput) -> Success | Error:
+        self, info: Info, schedule: type.CreateScheduleInput) -> Success | Error:
         db: Session = info.context["db"]
         new_schedule = model.Schedule(**vars(schedule))
 
@@ -29,7 +29,7 @@ class Mutation:
             db.add(new_schedule)
             db.commit()
 
-            return Success(f"Schedule {schedule.name} berhasil ditambahkan!")
+            return Success(f"Schedule berhasil ditambahkan!")
         except IntegrityError as e:
             print(e)
 
@@ -38,7 +38,7 @@ class Mutation:
         
     @strawberry.mutation
     def edit_schedule(
-        self, info: Info, id: int, schedule: type.EditScheduleInput) -> Success | Error:
+        self, info: Info, id: str, schedule: type.EditScheduleInput) -> Success | Error:
         db: Session = info.context["db"]
 
         try:
@@ -68,7 +68,7 @@ class Mutation:
     
     @strawberry.mutation
     def del_schedule(
-        self, info: Info, id: int) -> Success | Error:
+        self, info: Info, id: str) -> Success | Error:
         db: Session = info.context["db"]
 
         try:
@@ -88,16 +88,22 @@ class Mutation:
     
     @strawberry.mutation
     def toggle_attendance_open(
-        self, info: Info, id: int) -> Success | Error:
+        self, info: Info, id: str) -> Success | Error:
         db: Session = info.context["db"]
 
         try:
             query = db.query(model.Schedule).filter(model.Schedule.id == id)
             data = query.first()
-            not data.is_open
+    
+            query.update(
+                {
+                    model.Schedule.attendance_is_open: not data.attendance_is_open,
+                }
+            )
 
-
-            return Success(f"{data}schedule berhasil di ubah")
+            db.commit()
+            
+            return Success(f"schedule berhasil di ubah")
         except IntegrityError as e: 
             print(e)
 
