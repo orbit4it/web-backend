@@ -40,7 +40,7 @@ class Query:
         return type.Token(access_token=token)
 
 
-    @strawberry.field(permission_classes=[UserAuth])
+    @strawberry.field
     def refresh_token(self, info: Info) -> type.Token | Error:
         cookies = info.context["request"].cookies
         db: Session = info.context["db"]
