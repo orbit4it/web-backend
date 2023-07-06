@@ -108,19 +108,19 @@ class Mutation:
         try:
             query = db.query(model.UserPending).filter(model.UserPending.id == id).first()
             if query is None:
-                return Error('User Not Found')
+                return Error('User tidak ditemukan')
             db.delete(query)
             db.commit()
 
         except IntegrityError as e:
             db.rollback()
-            return Error(f'Error deleting: {e}')
+            return Error(f'Eror menghapus: {e}')
         
         except Exception as e:
             db.rollback()
-            return Error(f'Error deleting: {e}')
+            return Error(f'Eror menghapus: {e}')
         
-        return Success('Pending User deleted successfully')
+        return Success('Pending User berhasil dihapus')
     
 
     @strawberry.mutation(permission_classes=[SuperAdminAuth])
@@ -129,19 +129,19 @@ class Mutation:
         try:
             query = db.query(model.User).filter(model.User.id == id).first()
             if query is None:
-                return Error('User Not Found')
+                return Error('User tidak ditemukan')
             db.delete(query)
             db.commit()
 
         except IntegrityError as e:
             db.rollback()
-            return Error(f'Error deleting: {e}')
+            return Error(f'Eror menghapus: {e}')
         
         except Exception as e:
             db.rollback()
-            return Error(f'Error deleting: {e}')
+            return Error(f'Eror menghapus: {e}')
         
-        return Success(' User deleted successfully')
+        return Success(' User berhasil dihapus')
     
 
     @strawberry.mutation(permission_classes=[SuperAdminAuth])
@@ -151,19 +151,19 @@ class Mutation:
             query = db.query(model.User).filter(model.User.id == id).first()
 
             if query is None:
-                return Error(f"Could not find user with id {id}")
+                return Error(f"Tidak ada user dengan Id:  {id}")
         
             query.role = 'admin'
             db.commit()
 
         except IntegrityError as e:
             db.rollback()
-            return Error(f"Could not promote user: {e} Expected")
+            return Error(f"Gagal menaikan user: {e} ditemukan")
         
         except Exception as e: 
             db.rollback()
-            return Error(f"Could not promote user: {e} expected")
-        return Success('Promote user successfully')
+            return Error(f"Gagal menaikan user: {e} ditemukan")
+        return Success('Berhasil menaikan user')
     
 
     @strawberry.mutation(permission_classes=[SuperAdminAuth])
@@ -173,19 +173,19 @@ class Mutation:
             query = db.query(model.User).filter(model.User.id == id).first()
 
             if query is None:
-                return Error(f"Could not find user with id {id}")
+                return Error(f"Tidak ada user dengan Id: {id}")
         
             query.role = 'user'
             db.commit()
 
         except IntegrityError as e:
             db.rollback()
-            return Error(f"Could not demote user: {e} Expected")
+            return Error(f"Gagal menurunkan admin: {e} ditemukan")
         
         except Exception as e: 
             db.rollback()
-            return Error(f"Could not demote user: {e} expected")
-        return Success('demote admin successfully')
+            return Error(f"Gagal menurunkan admin: {e} ditemukan")
+        return Success('Berhasil menurunkan admin')
     
 
     @strawberry.mutation(permission_classes=[SuperAdminAuth])
@@ -195,19 +195,19 @@ class Mutation:
             query = db.query(model.User).filter(model.User.id == id).first()
 
             if query is None:
-                return Error(f"Could not find admin with id {id}")
+                return Error(f"Tidak ada user dengan Id: {id}")
         
             query.role = 'superadmin'
             db.commit()
 
         except IntegrityError as e:
             db.rollback()
-            return Error(f"Could not promote admin: {e} Expected")
+            return Error(f"Gagal menaikan admin: {e} ditemukan")
         
         except Exception as e: 
             db.rollback()
-            return Error(f"Could not promote admin: {e} expected")
-        return Success('Promote admin successfully')
+            return Error(f"Gagal menikan admin: {e} ditemukan")
+        return Success('Berhasil menaikan admin')
     
 
     @strawberry.mutation(permission_classes=[SuperAdminAuth])
@@ -217,18 +217,18 @@ class Mutation:
             query = db.query(model.User).filter(model.User.id == id).first()
 
             if query is None:
-                return Error(f"Could not find user with id {id}")
+                return Error(f"Tidak ada user dengan Id: {id}")
             
             query.role = 'admin'
             db.commit()
 
         except IntegrityError as e:
             db.rollback()
-            return Error(f"Could not demote superadmin: {e} Expected")
+            return Error(f"Gagal menurunkan superadmin: {e} ditemukan")
         
         except Exception as e: 
             db.rollback()
-            return Error(f"Could not demote superadmin: {e} expected")
-        return Success('Demote superadmin successfully')
+            return Error(f"Gagal menurunkan superadmin: {e} ditemukan")
+        return Success('Berhasil menurunkan superadmin')
 
     

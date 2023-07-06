@@ -109,7 +109,7 @@ class Query:
             res = db.query(model.User).all()
             return [extract_user_data(user) for user in res]
         else:
-            return Error('What are you doing here ?')
+            return Error('Kok bisa kesini re ?')
     
 
     # get by user id
@@ -118,7 +118,7 @@ class Query:
         db = info.context['db']
         user = db.query(model.User).filter(model.User.id == id).first()
         if user is None:
-            return Error('User not found')
+            return Error('User tidak ditemukan')
         return extract_user_data(user)
     
 
@@ -130,7 +130,7 @@ class Query:
         user = payload['sub']
         result = db.query(model.User).filter(model.User.id == user).first()
         if result is None:
-            return Error('Users do not exist')
+            return Error('User tidak ditemukan')
         return extract_user_data(result)
 
     
