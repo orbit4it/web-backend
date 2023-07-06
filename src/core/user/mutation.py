@@ -1,20 +1,22 @@
-import strawberry
 import asyncio
-
 from datetime import datetime, timedelta
-from passlib.hash import bcrypt
-from strawberry.types import Info
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError
 
-from src.permissions import AdminAuth, NotAuth
-from src.helpers import token, email
-from src.helpers.types import Success, Error
+import strawberry
+from passlib.hash import bcrypt
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+from strawberry.types import Info
+
+from src.helpers import email, token
+from src.helpers.types import Error, Success
+from src.permissions import AdminAuth, NotAuth, SuperAdminAuth
+
 from . import model, type
 
 
 @strawberry.type
 class Mutation:
+
 
     @strawberry.mutation(permission_classes=[NotAuth])
     def create_user_pending(
@@ -98,3 +100,135 @@ class Mutation:
         ))
 
         return Success("Mengirim email verifikasi")
+    
+
+    @strawberry.mutation(permission_classes=[AdminAuth])
+    def delete_pending_user(self, info: Info, id:int)-> Success | Error:
+        db: Session = info.context["db"]
+        try:
+            query = db.query(model.UserPending).filter(model.UserPending.id == id).first()
+            if query is None:
+                return Error('User Not Found')
+            db.delete(query)
+            db.commit()
+
+        except IntegrityError as e:
+            db.rollback()
+            return Error(f'Error deleting: {e}')
+        
+        except Exception as e:
+            db.rollback()
+            return Error(f'Error deleting: {e}')
+        
+        return Success('Pending User deleted successfully')
+    
+
+    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    def delete_user(self, info: Info, id:str)-> Success | Error:
+        db: Session = info.context["db"]
+        try:
+            query = db.query(model.User).filter(model.User.id == id).first()
+            if query is None:
+                return Error('User Not Found')
+            db.delete(query)
+            db.commit()
+
+        except IntegrityError as e:
+            db.rollback()
+            return Error(f'Error deleting: {e}')
+        
+        except Exception as e:
+            db.rollback()
+            return Error(f'Error deleting: {e}')
+        
+        return Success(' User deleted successfully')
+    
+
+    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    def promote_user(self, info: Info, id:str)-> Success | Error:
+        db: Session = info.context["db"]
+        try: 
+            query = db.query(model.User).filter(model.User.id == id).first()
+
+            if query is None:
+                return Error(f"Could not find user with id {id}")
+        
+            query.role = 'admin'
+            db.commit()
+
+        except IntegrityError as e:
+            db.rollback()
+            return Error(f"Could not promote user: {e} Expected")
+        
+        except Exception as e: 
+            db.rollback()
+            return Error(f"Could not promote user: {e} expected")
+        return Success('Promote user successfully')
+    
+
+    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    def demote_admin(self, info: Info, id:str)-> Success | Error:
+        db: Session = info.context["db"]
+        try: 
+            query = db.query(model.User).filter(model.User.id == id).first()
+
+            if query is None:
+                return Error(f"Could not find user with id {id}")
+        
+            query.role = 'user'
+            db.commit()
+
+        except IntegrityError as e:
+            db.rollback()
+            return Error(f"Could not demote user: {e} Expected")
+        
+        except Exception as e: 
+            db.rollback()
+            return Error(f"Could not demote user: {e} expected")
+        return Success('demote admin successfully')
+    
+
+    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    def promote_admin(self, info: Info, id:str)-> Success | Error:
+        db: Session = info.context["db"]
+        try: 
+            query = db.query(model.User).filter(model.User.id == id).first()
+
+            if query is None:
+                return Error(f"Could not find admin with id {id}")
+        
+            query.role = 'superadmin'
+            db.commit()
+
+        except IntegrityError as e:
+            db.rollback()
+            return Error(f"Could not promote admin: {e} Expected")
+        
+        except Exception as e: 
+            db.rollback()
+            return Error(f"Could not promote admin: {e} expected")
+        return Success('Promote admin successfully')
+    
+
+    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    def demote_super_admin(self, info: Info, id:str)-> Success | Error:
+        db: Session = info.context["db"]
+        try: 
+            query = db.query(model.User).filter(model.User.id == id).first()
+
+            if query is None:
+                return Error(f"Could not find user with id {id}")
+            
+            query.role = 'admin'
+            db.commit()
+
+        except IntegrityError as e:
+            db.rollback()
+            return Error(f"Could not demote superadmin: {e} Expected")
+        
+        except Exception as e: 
+            db.rollback()
+            return Error(f"Could not demote superadmin: {e} expected")
+        return Success('Demote superadmin successfully')
+
+    
