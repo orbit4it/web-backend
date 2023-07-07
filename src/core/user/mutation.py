@@ -41,9 +41,6 @@ class Mutation:
     ) -> Success | Error:
         db: Session = info.context["db"]
 
-        if len(password) < 8:
-            return Error("Password minimal 8 karakter")
-
         user_pending_query = (db.query(model.UserPending)
             .filter(model.UserPending.registration_token == registration_token))
 
@@ -51,6 +48,9 @@ class Mutation:
 
         if user_pending is None or user_pending.expired_at < datetime.now(): # type: ignore
             return Error("Token registrasi tidak valid")
+
+        if len(password) < 8:
+            return Error("Password minimal 8 karakter")
 
         user = model.User(
             name=user_pending.name,
