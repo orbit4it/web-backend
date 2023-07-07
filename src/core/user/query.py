@@ -69,31 +69,31 @@ class Query:
     def users(self, info: Info) -> list[type.Users]:
         db = info.context['db']
         users = db.query(model.User).filter(model.User.role != 'superadmin').all()
-        return [extract_user_data(user) for user in users]
-    
+        return users
+
 
     # get all admin
     @strawberry.field(permission_classes=[SuperAdminAuth])
     def users_admin(self, info: Info)->list[type.Users]:
         db = info.context['db']
         users = db.query(model.User).filter(model.User.role == 'admin').all()
-        return [extract_user_data(user) for user in users]
-    
+        return users
+
 
     @strawberry.field(permission_classes=[SuperAdminAuth])
     def super_admin(self, info: Info)->list[type.Users]:
         db = info.context['db']
         users = db.query(model.User).filter(model.User.role == 'superadmin').all()
-        return [extract_user_data(user) for user in users]
-    
+        return users
+
 
     # superadmin get users
     @strawberry.field(permission_classes=[SuperAdminAuth])
     def users_no_restrict(self, info: Info) -> list[type.Users]:
         db = info.context['db']
         users = db.query(model.User).all()
-        return [extract_user_data(user) for user in users]
-    
+        return users
+
 
     # get users via jwt role
     @strawberry.field(permission_classes=[UserAuth])
@@ -103,13 +103,13 @@ class Query:
         role = payload['role']
         if role == 'admin' or role == 'user':
             res = db.query(model.User).filter(model.User.role != 'superadmin').all()
-            return [extract_user_data(user) for user in res]
+            return res
         elif role == 'superadmin':
             res = db.query(model.User).all()
-            return [extract_user_data(user) for user in res]
+            return res
         else:
             return Error('Kok bisa kesini re ?')
-    
+
 
     # get by user id
     @strawberry.field(permission_classes=[NotAuth])
@@ -118,8 +118,8 @@ class Query:
         user = db.query(model.User).filter(model.User.id == id).first()
         if user is None:
             return Error('User tidak ditemukan')
-        return extract_user_data(user)
-    
+        return user
+
 
     # @strawberry.field(permission_classes=[UserAuth])
     @strawberry.field
@@ -130,26 +130,4 @@ class Query:
         result = db.query(model.User).filter(model.User.id == user).first()
         if result is None:
             return Error('User tidak ditemukan')
-        return extract_user_data(result)
-
-    
-
-   
-
-
-
-def extract_user_data(user):
-    user_data = type.Users(
-        id=user.id,
-        name=user.name,
-        role=extract_role(user.role),
-        division=user.division,
-        grade=user.grade
-    )
-    return user_data
-
-def extract_role(role):
-    if isinstance(role, str):
-        if role.startswith("Role."):
-            return role.split(".")[-1]
-    return getattr(role, "name", None) or getattr(role, "value", None) or role
+        return result

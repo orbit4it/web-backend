@@ -1,16 +1,11 @@
 import uuid
-import enum
 
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Enum, Text, func
 from sqlalchemy.orm import relationship
 
 from src.db.session import Base
+from . import type
 
-
-class Role(enum.Enum):
-    superadmin = "superadmin"
-    admin = "admin"
-    user = "user"
 
 
 class User(Base):
@@ -21,7 +16,7 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
     profile_picture = Column(String(255))
-    role = Column(Enum(Role), nullable=False, default=Role.user.value)
+    role = Column(Enum(type.Role), nullable=False, default=type.Role.user)
     nis = Column(String(10), unique=True)
     refresh_token = Column(String(64), nullable=False)
     score = Column(Integer, default=0)

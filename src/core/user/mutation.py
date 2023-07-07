@@ -105,7 +105,7 @@ class Mutation:
         ))
 
         return Success("Mengirim email verifikasi")
-    
+
 
     @strawberry.mutation(permission_classes=[AdminAuth])
     def delete_pending_user(self, info: Info, id:int)-> Success | Error:
@@ -120,13 +120,13 @@ class Mutation:
         except IntegrityError as e:
             db.rollback()
             return Error(f'Eror menghapus: {e}')
-        
+
         except Exception as e:
             db.rollback()
             return Error(f'Eror menghapus: {e}')
-        
+
         return Success('Pending User berhasil dihapus')
-    
+
 
     @strawberry.mutation(permission_classes=[SuperAdminAuth])
     def delete_user(self, info: Info, id:str)-> Success | Error:
@@ -141,99 +141,99 @@ class Mutation:
         except IntegrityError as e:
             db.rollback()
             return Error(f'Eror menghapus: {e}')
-        
+
         except Exception as e:
             db.rollback()
             return Error(f'Eror menghapus: {e}')
-        
+
         return Success(' User berhasil dihapus')
-    
+
 
     @strawberry.mutation(permission_classes=[SuperAdminAuth])
     def promote_user(self, info: Info, id:str)-> Success | Error:
         db: Session = info.context["db"]
-        try: 
+        try:
             query = db.query(model.User).filter(model.User.id == id).first()
 
             if query is None:
                 return Error(f"Tidak ada user dengan Id:  {id}")
-        
+
             query.role = 'admin'
             db.commit()
 
         except IntegrityError as e:
             db.rollback()
             return Error(f"Gagal menaikan user: {e} ditemukan")
-        
-        except Exception as e: 
+
+        except Exception as e:
             db.rollback()
             return Error(f"Gagal menaikan user: {e} ditemukan")
         return Success('Berhasil menaikan user')
-    
+
 
     @strawberry.mutation(permission_classes=[SuperAdminAuth])
     def demote_admin(self, info: Info, id:str)-> Success | Error:
         db: Session = info.context["db"]
-        try: 
+        try:
             query = db.query(model.User).filter(model.User.id == id).first()
 
             if query is None:
                 return Error(f"Tidak ada user dengan Id: {id}")
-        
+
             query.role = 'user'
             db.commit()
 
         except IntegrityError as e:
             db.rollback()
             return Error(f"Gagal menurunkan admin: {e} ditemukan")
-        
-        except Exception as e: 
+
+        except Exception as e:
             db.rollback()
             return Error(f"Gagal menurunkan admin: {e} ditemukan")
         return Success('Berhasil menurunkan admin')
-    
+
 
     @strawberry.mutation(permission_classes=[SuperAdminAuth])
     def promote_admin(self, info: Info, id:str)-> Success | Error:
         db: Session = info.context["db"]
-        try: 
+        try:
             query = db.query(model.User).filter(model.User.id == id).first()
 
             if query is None:
                 return Error(f"Tidak ada user dengan Id: {id}")
-        
+
             query.role = 'superadmin'
             db.commit()
 
         except IntegrityError as e:
             db.rollback()
             return Error(f"Gagal menaikan admin: {e} ditemukan")
-        
-        except Exception as e: 
+
+        except Exception as e:
             db.rollback()
             return Error(f"Gagal menikan admin: {e} ditemukan")
         return Success('Berhasil menaikan admin')
-    
+
 
     @strawberry.mutation(permission_classes=[SuperAdminAuth])
     def demote_super_admin(self, info: Info, id:str)-> Success | Error:
         db: Session = info.context["db"]
-        try: 
+        try:
             query = db.query(model.User).filter(model.User.id == id).first()
 
             if query is None:
                 return Error(f"Tidak ada user dengan Id: {id}")
-            
+
             query.role = 'admin'
             db.commit()
 
         except IntegrityError as e:
             db.rollback()
             return Error(f"Gagal menurunkan superadmin: {e} ditemukan")
-        
-        except Exception as e: 
+
+        except Exception as e:
             db.rollback()
             return Error(f"Gagal menurunkan superadmin: {e} ditemukan")
         return Success('Berhasil menurunkan superadmin')
 
-    
+
