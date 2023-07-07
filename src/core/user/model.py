@@ -1,15 +1,17 @@
-import uuid
 import enum
+import uuid
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Enum, Text, func
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import relationship
 
 from src.db.session import Base
+
 
 class Role(enum.Enum):
     superadmin = "superadmin"
     admin = "admin"
     user = "user"
+
 
 class User(Base):
     __tablename__ = "users"
@@ -32,6 +34,9 @@ class User(Base):
 
     grade_id = Column(Integer, ForeignKey("grades.id"))
     grade = relationship("Grade", back_populates="students")
+
+    attendances = relationship("Attendance", back_populates="user")
+
 
 class UserPending(Base):
     __tablename__ = "users_pending"

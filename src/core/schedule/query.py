@@ -12,6 +12,7 @@ from src.helpers.types import Error, Success
 
 from . import model, type
 
+
 @strawberry.type
 class Query:
     @strawberry.field

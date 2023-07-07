@@ -20,10 +20,12 @@ class Schedule(Base):
 
     id = Column(String(36), primary_key=True, default=uuid.uuid4)
     note = Column(Text)
-    date = Column(DateTime, nullable=False, default=func.now())
+    date = Column(DateTime, default=func.now())
     location = Column(Text, nullable=False)
     token = Column(String(8), nullable=False, unique=True)
     attendance_is_open = Column(Boolean, default=False)
 
     division_id = Column(Integer, ForeignKey("divisions.id"))
     division = relationship("Division", back_populates="schedules")
+
+    attendances = relationship("Attendance", back_populates="schedule")
