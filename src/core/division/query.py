@@ -20,4 +20,3 @@ class Query:
         db: Session = info.context["db"]
 
         return db.query(model.Division)  # type: ignore
-

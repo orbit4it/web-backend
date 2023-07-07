@@ -76,4 +76,5 @@ class Mutation:
             print(e)
 
             db.rollback()
+
             return Error("Terjadi kesalahan")

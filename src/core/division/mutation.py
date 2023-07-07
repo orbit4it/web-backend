@@ -59,8 +59,7 @@ class Mutation:
 
             db.rollback()
             return Error("Terjadi kesalahan")
-        
-    
+
     # permission: admin, superadmin
     @strawberry.mutation
     def del_division(self, info: Info, id: int) -> Success | Error:
@@ -78,4 +77,5 @@ class Mutation:
             print(e)
 
             db.rollback()
+
             return Error("Terjadi kesalahan")
