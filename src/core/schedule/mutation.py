@@ -31,6 +31,7 @@ class Mutation:
             db.commit()
 
             return Success(f"Schedule berhasil ditambahkan!")
+            return Success(f"Schedule berhasil ditambahkan!")
         except IntegrityError as e:
             print(e)
 
@@ -53,11 +54,9 @@ class Mutation:
             query.update(
                 {
                     model.Schedule.note: schedule.note,
-                    model.Schedule.date: schedule.date,
                     model.Schedule.location: schedule.location,
-                    model.Schedule.token: schedule.token,
                     model.Schedule.attendance_is_open: schedule.attendance_is_open,
-                }
+                }  # type: ignore
             )
             db.commit()
 
@@ -92,11 +91,11 @@ class Mutation:
 
         try:
             query = db.query(model.Schedule).filter(model.Schedule.id == id)
-            data = query.first()
+            data: type.ScheduleType = query.first()
 
             query.update(
                 {
-                    model.Schedule.attendance_is_open: not data.attendance_is_open,
+                    model.Schedule.attendance_is_open: not data.attendance_is_open,  # type: ignore
                 }
             )
 
