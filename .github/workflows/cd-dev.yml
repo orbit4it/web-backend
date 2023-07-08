@@ -18,4 +18,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            whoami
+            cd ${{ secrets.PATH_DEV }}
+            git pull origin dev
+            git status
+            source venv/bin/activate
+            pip install -r requirements.txt
+            cat ${{ secrets.ENV_FILE_DEV }} > .env
+            pm2 restart orbit
