@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 import db.tables
-from config import config
+from config import config, is_dev
 from schema import graphql_app
 
 app = FastAPI()
@@ -19,9 +19,12 @@ app.add_middleware(
 app.include_router(graphql_app, prefix="/graphql")
 
 if __name__ == "__main__":
+    host = str(config["HOST"])
+    port = int(str(config["PORT"]))
+
     uvicorn.run(
         app="main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True
+        host=host,
+        port=port,
+        reload=is_dev()
     )
