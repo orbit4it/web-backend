@@ -7,7 +7,7 @@ from mock_alchemy.mocking import (
 )
 from strawberry.schema import Schema
 from strawberry.extensions import SchemaExtension
-from src.schema import Query, Mutation
+from schema import Query, Mutation
 
 
 @pytest.fixture

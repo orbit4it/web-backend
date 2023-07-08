@@ -3,7 +3,7 @@ from strawberry import Schema
 from strawberry.fastapi import GraphQLRouter
 from sqlalchemy.orm import Session as _Session
 
-from src.db.session import Session
+from db.session import Session
 from .query import Query
 from .mutation import Mutation
 

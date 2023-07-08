@@ -1,11 +1,11 @@
 import pytest
 
 from passlib.hash import bcrypt
-from src.helpers import jwt
-from src.core.user.model import User
-from src.core.user.type import Role
-from src.core.division.model import Division # pyright: ignore
-from src.core.grade.model import Grade # pyright: ignore
+from helpers import jwt
+from core.user.model import User
+from core.user.type import Role
+from core.division.model import Division # pyright: ignore
+from core.grade.model import Grade # pyright: ignore
 from tests.setup import Mock, Request, Response, mock, caller # pyright: ignore
 
 

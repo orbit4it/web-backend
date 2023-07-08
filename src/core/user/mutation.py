@@ -7,10 +7,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from strawberry.types import Info
 
-from src.helpers import email, token
-from src.helpers.types import Error, Success
-from src.permissions import AdminAuth, NotAuth, SuperAdminAuth
-from src.helpers.validation import ValidationError, validate_user_pending
+from helpers import email, token
+from helpers.types import Error, Success
+from permissions import AdminAuth, NotAuth, SuperAdminAuth
+from helpers.validation import ValidationError, validate_user_pending
 from . import model, type
 
 

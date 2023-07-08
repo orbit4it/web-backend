@@ -1,8 +1,8 @@
 import strawberry
 
-from src.core.division import Mutation as DivisionMutation
-from src.core.grade import Mutation as GradeMutation
-from src.core.user import Mutation as UserMutation
+from core.division.mutation import Mutation as DivisionMutation
+from core.grade.mutation import Mutation as GradeMutation
+from core.user.mutation import Mutation as UserMutation
 
 
 @strawberry.type

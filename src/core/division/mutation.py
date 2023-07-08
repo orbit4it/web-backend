@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from strawberry.types import Info
 
-from src.helpers.types import Error, Success
+from helpers.types import Error, Success
 
 from . import model, type
 
@@ -59,8 +59,8 @@ class Mutation:
 
             db.rollback()
             return Error("Terjadi kesalahan")
-        
-    
+
+
     # permission: admin, superadmin
     @strawberry.mutation
     def del_division(self, info: Info, id: int) -> Success | Error:

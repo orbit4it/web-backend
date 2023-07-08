@@ -1,7 +1,7 @@
 from strawberry import BasePermission
 from strawberry.types import Info
 
-from src.helpers import jwt
+from helpers import jwt
 
 
 class BaseAuth(BasePermission):

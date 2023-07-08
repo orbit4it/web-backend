@@ -6,12 +6,19 @@ GraphQL backend for Orbit website.
 
 1. Clone this repository
 2. Create `.env` file ([see example](https://github.com/orbit4it/web-backend/blob/main/.env.example))
-3. Install dependencies & run the server:
+3. Install dependencies
 
 ```
 pip install -r requirements.txt
-uvicorn src.main:app --reload
 ```
+
+4. Run
+
+```
+python src/main.py
+```
+
+5. Open `localhost:8000/graphql`
 
 ## Adding new features
 
@@ -44,9 +51,9 @@ Register a model to create a table in the database. You just simply need to impo
 `src/db/tables.py`
 
 ```python
-import src.core.user.model
-import src.core.grade.model
-import src.core.division.model
+import core.user.model
+import core.grade.model
+import core.division.model
 # Import models here
 
 from .session import Base, engine
@@ -65,7 +72,7 @@ To register queries & mutations to the graphql schema, edit the following files:
 ```python
 import strawberry
 
-from src.core.user import Query as UserQuery
+from core.user import Query as UserQuery
 # Import query here
 
 @strawberry.type

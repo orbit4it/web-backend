@@ -1,4 +1,4 @@
-name: CD Development
+name: Deploy to Development Server
 
 on:
   push:
@@ -19,4 +19,3 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             whoami
-            ls -al

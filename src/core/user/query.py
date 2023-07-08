@@ -4,9 +4,9 @@ from passlib.hash import bcrypt
 from sqlalchemy.orm import Session
 from strawberry.types import Info
 
-from src.helpers import jwt
-from src.helpers.types import Error
-from src.permissions import NotAuth, SuperAdminAuth, UserAuth
+from helpers import jwt
+from helpers.types import Error
+from permissions import NotAuth, SuperAdminAuth, UserAuth
 from . import model, type
 
 

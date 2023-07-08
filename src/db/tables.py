@@ -1,6 +1,6 @@
-import src.core.user.model
-import src.core.grade.model
-import src.core.division.model
+import core.user.model
+import core.grade.model
+import core.division.model
 
 from .session import Base, engine
 

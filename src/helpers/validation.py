@@ -1,6 +1,6 @@
 from email_validator import validate_email
 
-from src.core.user.type import UserPendingInput
+from core.user.type import UserPendingInput
 
 
 class ValidationError(Exception):
