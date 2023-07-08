@@ -1,12 +1,10 @@
 import uvicorn
-import db.tables
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+import db.tables
 from config import config
 from schema import graphql_app
-
 
 app = FastAPI()
 
