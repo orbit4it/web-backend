@@ -1,5 +1,4 @@
 import strawberry
-
 from passlib.hash import bcrypt
 from sqlalchemy.orm import Session
 from strawberry.types import Info
@@ -7,6 +6,7 @@ from strawberry.types import Info
 from helpers import jwt
 from helpers.types import Error
 from permissions import NotAuth, SuperAdminAuth, UserAuth
+
 from . import model, type
 
 
@@ -131,3 +131,10 @@ class Query:
         if result is None:
             return Error('User tidak ditemukan')
         return result
+
+
+    # @strawberry.field(permission_classes=[SuperAdminAuth]
+    @strawberry.field
+    def pending_users(self, info: Info)->list[type.UserPending]:
+        db = info.context['db']
+        return db.query(model.UserPending).all()
