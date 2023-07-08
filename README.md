@@ -33,13 +33,6 @@ To add new features, create new module in the `src/core` folder. The standard si
 └── type.py
 ```
 
-Add this code in `__init__.py`:
-
-```python
-from .query import *
-from .mutation import *
-```
-
 Look at existing features in `src/core` as examples to start writing code.
 
 After you finish writing the code. Follow these steps to register the feature to the app.
