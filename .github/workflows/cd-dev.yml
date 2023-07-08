@@ -23,5 +23,5 @@ jobs:
             git status
             source venv/bin/activate
             pip install -r requirements.txt
-            cat ${{ secrets.ENV_FILE_DEV }} > .env
+            echo ${{ secrets.ENV_FILE_DEV }} > .env
             pm2 restart orbit
