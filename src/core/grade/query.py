@@ -12,7 +12,7 @@ from . import model, type
 
 @strawberry.type
 class Query:
-    @strawberry.field
+    @strawberry.field(description="Get all grade")
     def grades(self, info: Info) -> List[type.GradeType]:
         db: Session = info.context["db"]
 

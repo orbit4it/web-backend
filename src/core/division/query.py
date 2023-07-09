@@ -12,7 +12,7 @@ from . import model, type
 
 @strawberry.type
 class Query:
-    @strawberry.field
+    @strawberry.field(description="Get all division")
     def divisions(
         self,
         info: Info,

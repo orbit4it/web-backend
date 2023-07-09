@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from strawberry.types import Info
 
 from helpers.types import Error, Success
+from permissions.auth import AdminAuth
 
 from . import model, type
 
@@ -13,7 +14,10 @@ from . import model, type
 @strawberry.type
 class Mutation:
     # permission: admin, superadmin
-    @strawberry.mutation
+    @strawberry.mutation(
+        permission_classes=[AdminAuth],
+        description="(Admin) Create division"
+    )
     def create_division(
         self, info: Info, division: type.NewDivisionInput
     ) -> Success | Error:
@@ -32,7 +36,10 @@ class Mutation:
             return Error("Terjadi kesalahan")
 
     # permission: admin, superadmin
-    @strawberry.mutation
+    @strawberry.mutation(
+        permission_classes=[AdminAuth],
+        description="(Admin) Edit division"
+    )
     def edit_division(
         self, info: Info, id: int, division: type.EditDivisionInput
     ) -> Success | Error:
@@ -62,7 +69,10 @@ class Mutation:
 
 
     # permission: admin, superadmin
-    @strawberry.mutation
+    @strawberry.mutation(
+        permission_classes=[AdminAuth],
+        description="(Admin) delete division"
+    )
     def del_division(self, info: Info, id: int) -> Success | Error:
         db: Session = info.context["db"]
 

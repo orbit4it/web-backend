@@ -14,7 +14,10 @@ from . import model, type
 class Query:
 
 
-    @strawberry.field(permission_classes=[NotAuth])
+    @strawberry.field(
+        permission_classes=[NotAuth],
+        description="(NotAuth) Login to get access and refresh token"
+    )
     def user_auth(
         self, info: Info, email: str, password: str) -> type.Token | Error:
         db: Session = info.context["db"]
@@ -40,7 +43,7 @@ class Query:
         return type.Token(access_token=token)
 
 
-    @strawberry.field
+    @strawberry.field(description="Use refresh token cookie to get new access token")
     def refresh_token(self, info: Info) -> type.Token | Error:
         cookies = info.context["request"].cookies
         db: Session = info.context["db"]
@@ -65,7 +68,10 @@ class Query:
 
 
     # normal user get users
-    @strawberry.field(permission_classes=[UserAuth])
+    @strawberry.field(
+        permission_classes=[UserAuth],
+        description="(Auth) Get all user and admin"
+    )
     def users(self, info: Info) -> list[type.Users]:
         db = info.context['db']
         users = db.query(model.User).filter(model.User.role != 'superadmin').all()
@@ -73,14 +79,20 @@ class Query:
 
 
     # get all admin
-    @strawberry.field(permission_classes=[SuperAdminAuth])
+    @strawberry.field(
+        permission_classes=[SuperAdminAuth],
+        description="(SuperAdmin) Get all admin"
+    )
     def users_admin(self, info: Info)->list[type.Users]:
         db = info.context['db']
         users = db.query(model.User).filter(model.User.role == 'admin').all()
         return users
 
 
-    @strawberry.field(permission_classes=[SuperAdminAuth])
+    @strawberry.field(
+        permission_classes=[SuperAdminAuth],
+        description="(SuperAdmin) Get all superadmin"
+    )
     def super_admin(self, info: Info)->list[type.Users]:
         db = info.context['db']
         users = db.query(model.User).filter(model.User.role == 'superadmin').all()
@@ -88,7 +100,10 @@ class Query:
 
 
     # superadmin get users
-    @strawberry.field(permission_classes=[SuperAdminAuth])
+    @strawberry.field(
+        permission_classes=[SuperAdminAuth],
+        description="(SuperAdmin) get all user, admin, and superadmin"
+    )
     def users_no_restrict(self, info: Info) -> list[type.Users]:
         db = info.context['db']
         users = db.query(model.User).all()
@@ -96,7 +111,10 @@ class Query:
 
 
     # get users via jwt role
-    @strawberry.field(permission_classes=[UserAuth])
+    @strawberry.field(
+        permission_classes=[UserAuth],
+        description="(Auth) Get all user via role in jwt"
+    )
     def users_jwt(self, info: Info)->list[type.Users]:
         db = info.context['db']
         payload = info.context['payload']
@@ -112,7 +130,10 @@ class Query:
 
 
     # get by user id
-    @strawberry.field(permission_classes=[NotAuth])
+    @strawberry.field(
+        permission_classes=[NotAuth],
+        description="(NotAuth) Get user by id"
+    )
     def user_by_id(self, info: Info, id: str)->type.Users:
         db = info.context['db']
         user = db.query(model.User).filter(model.User.id == id).first()
@@ -121,8 +142,10 @@ class Query:
         return user
 
 
-    # @strawberry.field(permission_classes=[UserAuth])
-    @strawberry.field
+    @strawberry.field(
+        permission_classes=[UserAuth],
+        description="(Auth) Get user by auth jwt"
+    )
     def me(self, info: Info)->type.Users:
         db = info.context['db']
         payload = info.context['payload']
@@ -133,8 +156,10 @@ class Query:
         return result
 
 
-    # @strawberry.field(permission_classes=[SuperAdminAuth]
-    @strawberry.field
+    @strawberry.field(
+        permission_classes=[SuperAdminAuth],
+        description="(SuperAdmin) Get all pending user"
+    )
     def pending_users(self, info: Info)->list[type.UserPending]:
         db = info.context['db']
         return db.query(model.UserPending).all()

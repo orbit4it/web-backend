@@ -17,7 +17,10 @@ from . import model, type
 @strawberry.type
 class Mutation:
 
-    @strawberry.mutation(permission_classes=[NotAuth])
+    @strawberry.mutation(
+        permission_classes=[NotAuth],
+        description="(NotAuth) Register to create a pending user which will later be confirmed/verified by the admin"
+    )
     def create_user_pending(
         self, info: Info, user_pending: type.UserPendingInput
     ) -> Success | Error:
@@ -35,7 +38,10 @@ class Mutation:
         return Success("Akun sedang diverifikasi, mohon tunggu email verifikasi")
 
 
-    @strawberry.mutation(permission_classes=[NotAuth])
+    @strawberry.mutation(
+        permission_classes=[NotAuth],
+        description="(NotAuth) After user gets the registration token from email, user can re-register to create account"
+    )
     def create_user(
         self, info: Info, registration_token: str, password: str
     ) -> Success | Error:
@@ -80,7 +86,10 @@ class Mutation:
 
 
     # permission: admin, superadmin
-    @strawberry.mutation(permission_classes=[AdminAuth])
+    @strawberry.mutation(
+        permission_classes=[AdminAuth],
+        description="(Admin) Confirm user pending and send verification email"
+    )
     async def confirm_user(self, info: Info, id: int) -> Success | Error:
         db: Session = info.context["db"]
 
@@ -107,7 +116,10 @@ class Mutation:
         return Success("Mengirim email verifikasi")
 
 
-    @strawberry.mutation(permission_classes=[AdminAuth])
+    @strawberry.mutation(
+        permission_classes=[AdminAuth],
+        description="(Admin) Delete user pending"
+    )
     def delete_pending_user(self, info: Info, id:int)-> Success | Error:
         db: Session = info.context["db"]
         try:
@@ -128,7 +140,10 @@ class Mutation:
         return Success('Pending User berhasil dihapus')
 
 
-    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    @strawberry.mutation(
+        permission_classes=[SuperAdminAuth],
+        description="(SuperAdmin) Delete user"
+    )
     def delete_user(self, info: Info, id:str)-> Success | Error:
         db: Session = info.context["db"]
         try:
@@ -149,7 +164,10 @@ class Mutation:
         return Success(' User berhasil dihapus')
 
 
-    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    @strawberry.mutation(
+        permission_classes=[SuperAdminAuth],
+        description="(SuperAdmin) Promote user to admin"
+    )
     def promote_user(self, info: Info, id:str)-> Success | Error:
         db: Session = info.context["db"]
         try:
@@ -171,7 +189,10 @@ class Mutation:
         return Success('Berhasil menaikan user')
 
 
-    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    @strawberry.mutation(
+        permission_classes=[SuperAdminAuth],
+        description="(SuperAdmin) Demote admin to user"
+    )
     def demote_admin(self, info: Info, id:str)-> Success | Error:
         db: Session = info.context["db"]
         try:
@@ -193,7 +214,10 @@ class Mutation:
         return Success('Berhasil menurunkan admin')
 
 
-    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    @strawberry.mutation(
+        permission_classes=[SuperAdminAuth],
+        description="(SuperAdmin) Promote user/admin to superadmin"
+    )
     def promote_admin(self, info: Info, id:str)-> Success | Error:
         db: Session = info.context["db"]
         try:
@@ -215,7 +239,10 @@ class Mutation:
         return Success('Berhasil menaikan admin')
 
 
-    @strawberry.mutation(permission_classes=[SuperAdminAuth])
+    @strawberry.mutation(
+        permission_classes=[SuperAdminAuth],
+        description="(SuperAdmin) Demote superadmin to admin"
+    )
     def demote_super_admin(self, info: Info, id:str)-> Success | Error:
         db: Session = info.context["db"]
         try:
