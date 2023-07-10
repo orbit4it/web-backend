@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from strawberry.types import Info
 
 from permissions.auth import UserAuth
-from src.helpers.types import Error, Success
+from helpers.types import Error, Success
 
 from ..schedule.model import Schedule as ScheduleModel
 from . import model, type
@@ -12,7 +12,9 @@ from . import model, type
 
 @strawberry.type
 class Mutation:
-    @strawberry.mutation(permission_classes=[UserAuth])
+    @strawberry.mutation(
+        permission_classes=[UserAuth], description="Isi kehadiran user"
+    )
     def fill_attendance(
         self, info: Info, schedule_id: str, attendance: type.FillAttendanceInput
     ) -> Success | Error:

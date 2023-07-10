@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING, Annotated, List
 import strawberry
 
 if TYPE_CHECKING:
-    from ..schedule.type import ScheduleType
-    from ..user.type import Users
+    from core.schedule.type import ScheduleType
+    from core.user.type import Users
 
 
 @strawberry.enum
@@ -22,8 +22,22 @@ class AttendanceType:
     feedback: str
     suggestion: str
     reason: str
-    schedule: Annotated["ScheduleType", strawberry.lazy("...schedule.type")]
-    user: Annotated["Users", strawberry.lazy("..user.type")]
+    schedule: Annotated["ScheduleType", strawberry.lazy("core.schedule.type")]
+    user: Annotated["Users", strawberry.lazy("core.user.type")]
+
+
+@strawberry.type
+class AttendanceScheduleScore:
+    division_id: int
+    users: int
+    attendances: int
+
+
+@strawberry.type
+class MyAttendanceScore:
+    division_id: int
+    attendances: int
+    schedules: int
 
 
 @strawberry.input

@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from strawberry.types import Info
 from permissions.auth import AdminAuth
 
-from src.helpers.types import Error, Success
+from helpers.types import Error, Success
 
 from . import model, type
 
@@ -32,7 +32,7 @@ class Mutation:
             db.commit()
 
             return Success(f"Schedule berhasil ditambahkan!")
-        
+
         except IntegrityError as e:
             print(e)
 

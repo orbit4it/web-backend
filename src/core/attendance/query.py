@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from strawberry.types import Info
 
 from permissions.auth import UserAuth
-from src.helpers.types import Error, Success
+from helpers.types import Error, Success
 
 from ..schedule.model import Schedule as modelSchedule
 from ..user.model import User as modelUser
@@ -15,15 +15,11 @@ from . import model, type
 
 @strawberry.type
 class Query:
-    ...
-
-    # TODO
-    # my_attendance_score
-    # count schedule where schedule.div == user.div
-    # count attendace where schedule.user == user.id
-    # attendance / schedule * 100
-    @strawberry.field(permission_classes=[UserAuth])
-    def my_attendance_score(self, info: Info) -> float | Error:
+    @strawberry.field(
+        permission_classes=[UserAuth],
+        description="Persentase kehadiran user di setiap schedule divisi",
+    )
+    def my_attendance_score(self, info: Info) -> type.MyAttendanceScore | Error:
         db: Session = info.context["db"]
         user_id = info.context["payload"]["sub"]
         user_div = info.context["payload"]["div"]
@@ -40,27 +36,33 @@ class Query:
                 .count()
             )
 
-            percentage = count_attendance / count_schedule * 100
-
-            return percentage
+            return type.MyAttendanceScore(
+                division_id=user_div,
+                attendances=count_attendance,
+                schedules=count_schedule,
+            )
 
         except IntegrityError as e:
             print(e)
 
             return Error("Terjadi kesalahan")
 
-    # attendance_score (schedule.id)
-    # get
-    # count attendance where attendance.sche == sche.id
-    # count user where user
-    @strawberry.field
-    def attendance_schedule_score(self, info: Info, schedule_id: str) -> float | Error:
+    @strawberry.field(
+        permission_classes=[UserAuth],
+        description="Persentase kehadiran user dalam satu schedule",
+    )
+    def attendance_schedule_score(
+        self, info: Info, schedule_id: str
+    ) -> type.AttendanceScheduleScore | Error:
         db: Session = info.context["db"]
 
         try:
             schedule = (
-                db.query(modelSchedule).filter(modelSchedule.id == schedule.id).first()
+                db.query(modelSchedule).filter(modelSchedule.id == schedule_id).first()
             )
+
+            if not schedule:
+                return Error("Schedule tidak ditemukan")
 
             count_attendance = (
                 db.query(model.Attendance)
@@ -68,7 +70,13 @@ class Query:
                 .count()
             )
 
-            count_user = db.query(modelUser).filter()
+            count_user = (
+                db.query(modelUser)
+                .filter(modelUser.division_id == schedule.division_id)
+                .count()
+            )
+
+            return type.AttendanceScheduleScore(division_id=schedule.division_id, users=count_user, attendances=count_attendance)  # type: ignore
 
         except IntegrityError as e:
             print(e)

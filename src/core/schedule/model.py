@@ -12,7 +12,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
-from src.db.session import Base
+from db.session import Base
 
 
 class Schedule(Base):

@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from strawberry.types import Info
 
-from src.helpers.types import Error, Success
+from helpers.types import Error, Success
 
 from . import model, type
 

@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING, Annotated, List, Optional
 import strawberry
 
 if TYPE_CHECKING:
-    from ..attendance.type import AttendanceType
-    from ..division.type import DivisionType
+    from core.attendance.type import AttendanceType
+    from core.division.type import DivisionType
 
 
 @strawberry.type
@@ -17,9 +17,11 @@ class ScheduleType:
     attendance_is_open: bool
 
     # relation
-    division: Annotated["DivisionType", strawberry.lazy("..division.type")]
+    division: Annotated["DivisionType", strawberry.lazy("core.division.type")]
 
-    attendances: List[Annotated["AttendanceType", strawberry.lazy("..attendance.type")]]
+    attendances: List[
+        Annotated["AttendanceType", strawberry.lazy("core.attendance.type")]
+    ]
 
 
 # TODO
