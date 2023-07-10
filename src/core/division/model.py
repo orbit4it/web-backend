@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from db.session import Base
+from db.database import Base
 
 
 class Division(Base):
