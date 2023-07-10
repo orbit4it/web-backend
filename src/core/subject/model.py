@@ -1,9 +1,10 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy import Column, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
-from db.session import Base
+from db.database import Base
 
 from . import type
+
 
 class Subject(Base):
     __tablename__ = "subject_media"
