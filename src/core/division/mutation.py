@@ -67,7 +67,6 @@ class Mutation:
             db.rollback()
             return Error("Terjadi kesalahan")
 
-
     # permission: admin, superadmin
     @strawberry.mutation(
         permission_classes=[AdminAuth],

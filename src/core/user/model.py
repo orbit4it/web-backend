@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Enum, Text, func
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import relationship
 
 from db.session import Base
@@ -29,6 +29,8 @@ class User(Base):
 
     grade_id = Column(Integer, ForeignKey("grades.id"))
     grade = relationship("Grade", back_populates="students")
+
+    attendances = relationship("Attendance", back_populates="user")
 
 
 class UserPending(Base):

@@ -22,9 +22,4 @@ if __name__ == "__main__":
     host = str(config["HOST"])
     port = int(str(config["PORT"]))
 
-    uvicorn.run(
-        app="main:app",
-        host=host,
-        port=port,
-        reload=is_dev()
-    )
+    uvicorn.run(app="main:app", host=host, port=port, reload=is_dev())
