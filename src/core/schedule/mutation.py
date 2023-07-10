@@ -11,6 +11,7 @@ import strawberry
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from strawberry.types import Info
+from permissions.auth import AdminAuth
 
 from src.helpers.types import Error, Success
 
@@ -19,7 +20,7 @@ from . import model, type
 
 @strawberry.type
 class Mutation:
-    @strawberry.mutation
+    @strawberry.mutation(permission_classes=[AdminAuth])
     def create_schedule(
         self, info: Info, schedule: type.CreateScheduleInput
     ) -> Success | Error:
@@ -31,7 +32,7 @@ class Mutation:
             db.commit()
 
             return Success(f"Schedule berhasil ditambahkan!")
-            return Success(f"Schedule berhasil ditambahkan!")
+        
         except IntegrityError as e:
             print(e)
 

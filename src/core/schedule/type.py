@@ -1,8 +1,9 @@
-from typing import TYPE_CHECKING, Annotated, Optional
+from typing import TYPE_CHECKING, Annotated, List, Optional
 
 import strawberry
 
 if TYPE_CHECKING:
+    from ..attendance.type import AttendanceType
     from ..division.type import DivisionType
 
 
@@ -17,6 +18,8 @@ class ScheduleType:
 
     # relation
     division: Annotated["DivisionType", strawberry.lazy("..division.type")]
+
+    attendances: List[Annotated["AttendanceType", strawberry.lazy("..attendance.type")]]
 
 
 # TODO
