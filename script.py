@@ -6,6 +6,7 @@ if len(sys.argv) < 2:
 
 
 def seed_database():
+    from passlib.hash import bcrypt
     from db.database import Session
     import db.tables
     from core.division.model import Division
@@ -49,7 +50,7 @@ def seed_database():
     user = User(
         name="User",
         email="user@gmail.com",
-        password="password",
+        password=bcrypt.hash("password"),
         role=Role.user,
         refresh_token="123456789",
         phone_number="08123456789",
@@ -60,7 +61,7 @@ def seed_database():
     admin = User(
         name="Admin",
         email="admin@gmail.com",
-        password="password",
+        password=bcrypt.hash("password"),
         role=Role.admin,
         refresh_token="123456789",
         phone_number="08123456789",
@@ -71,7 +72,7 @@ def seed_database():
     superadmin = User(
         name="SuperAdmin",
         email="superadmin@gmail.com",
-        password="password",
+        password=bcrypt.hash("password"),
         role=Role.superadmin,
         refresh_token="123456789",
         phone_number="08123456789",
