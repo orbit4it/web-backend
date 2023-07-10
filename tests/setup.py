@@ -46,3 +46,6 @@ class Request():
 class Response():
     def set_cookie(self, key, value, httponly):
         ...
+
+    def delete_cookie(self, key):
+        ...
