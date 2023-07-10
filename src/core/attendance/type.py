@@ -47,4 +47,4 @@ class FillAttendanceInput:
     feedback: str
     suggestion: str
     reason: str
-    schedule: str
+    schedule_id: str

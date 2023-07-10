@@ -9,14 +9,17 @@ from sqlalchemy.orm import Session
 from strawberry.types import Info
 
 from helpers.types import Error, Success
+from permissions.auth import UserAuth
 
 from . import model, type
 
 
 @strawberry.type
 class Query:
-    @strawberry.field
-    def schedule(self, info: Info) -> List[type.ScheduleType]:
+    @strawberry.field(
+        permission_classes=[UserAuth], description="(Login) list jadwal tersedia"
+    )
+    def schedules(self, info: Info) -> List[type.ScheduleType]:
         db: Session = info.context["db"]
 
-        return db.query(model.Schedule)
+        return db.query(model.Schedule)  # type: ignore

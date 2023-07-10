@@ -20,7 +20,9 @@ from . import model, type
 
 @strawberry.type
 class Mutation:
-    @strawberry.mutation(permission_classes=[AdminAuth])
+    @strawberry.mutation(
+        permission_classes=[AdminAuth], description="(admin) membuat jadwal"
+    )
     def create_schedule(
         self, info: Info, schedule: type.CreateScheduleInput
     ) -> Success | Error:
@@ -39,7 +41,9 @@ class Mutation:
             db.rollback()
             return Error("Terjadi kesalahan")
 
-    @strawberry.mutation
+    @strawberry.mutation(
+        permission_classes=[AdminAuth], description="(admin) edit satu jadwal"
+    )
     def edit_schedule(
         self, info: Info, id: str, schedule: type.EditScheduleInput
     ) -> Success | Error:
@@ -57,6 +61,7 @@ class Mutation:
                     model.Schedule.note: schedule.note,
                     model.Schedule.location: schedule.location,
                     model.Schedule.attendance_is_open: schedule.attendance_is_open,
+                    model.Schedule.division_id: schedule.division_id,
                 }  # type: ignore
             )
             db.commit()
@@ -68,7 +73,9 @@ class Mutation:
             db.rollback()
             return Error("Terjadi kesalahan")
 
-    @strawberry.mutation
+    @strawberry.mutation(
+        permission_classes=[AdminAuth], description="(admin) hapus jadwal"
+    )
     def del_schedule(self, info: Info, id: str) -> Success | Error:
         db: Session = info.context["db"]
 
@@ -86,13 +93,18 @@ class Mutation:
             db.rollback()
             return Error("Terjadi kesalahan")
 
-    @strawberry.mutation
+    @strawberry.mutation(
+        permission_classes=[AdminAuth], description="(admin) buka tutup absensi jadwal"
+    )
     def toggle_attendance_open(self, info: Info, id: str) -> Success | Error:
         db: Session = info.context["db"]
 
         try:
             query = db.query(model.Schedule).filter(model.Schedule.id == id)
             data: type.ScheduleType = query.first()
+
+            if not data:
+                return Error("Schedule tidak ditemukan")
 
             query.update(
                 {

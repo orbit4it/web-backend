@@ -36,6 +36,7 @@ class CreateScheduleInput:
     location: str
     token: str
     attendance_is_open: Optional[bool] = False
+    division_id: int
 
 
 @strawberry.input
@@ -43,3 +44,4 @@ class EditScheduleInput:
     note: str
     location: str
     attendance_is_open: Optional[bool] = False
+    division_id: int

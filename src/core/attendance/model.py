@@ -19,7 +19,7 @@ class Attendance(Base):
     reason = Column(Text)
 
     schedule_id = Column(String(36), ForeignKey("schedules.id"))
-    schedule = relationship("Schedule", back_populates="attendance")
+    schedule = relationship("Schedule", back_populates="attendances")
 
     user_id = Column(String(36), ForeignKey("users.id"))
     user = relationship("User", back_populates="attendances")
