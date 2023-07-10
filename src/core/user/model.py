@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import relationship
 
-from db.session import Base
+from db.database import Base
 from . import type
 
 

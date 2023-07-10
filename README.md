@@ -49,7 +49,7 @@ import core.grade.model
 import core.division.model
 # Import models here
 
-from .session import Base, engine
+from .database import Base, engine
 
 
 Base.metadata.create_all(engine)

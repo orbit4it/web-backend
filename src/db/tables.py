@@ -4,7 +4,7 @@ import core.user.model
 import core.grade.model
 import core.division.model
 
-from .session import Base, engine
+from .database import Base, engine
 
 Base.metadata.create_all(engine)
 

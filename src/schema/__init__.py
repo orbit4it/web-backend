@@ -4,8 +4,8 @@ from strawberry.fastapi import GraphQLRouter
 from strawberry.extensions import AddValidationRules
 from graphql.validation import NoSchemaIntrospectionCustomRule
 
-from db.session import Session
-from config import config, is_dev
+from db.database import Session
+from config import is_dev
 from .query import Query
 from .mutation import Mutation
 
