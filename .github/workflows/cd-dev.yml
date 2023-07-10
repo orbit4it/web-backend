@@ -2,7 +2,8 @@ name: Deploy to Development Server
 
 on:
   push:
-    branch: dev
+    branches:
+      - dev
 
 jobs:
   deploy:
@@ -21,6 +22,7 @@ jobs:
             cd "${{ secrets.PATH_DEV }}"
             git pull origin dev
             git status
+            source venv/bin/activate
             pip install -r requirements.txt
             echo "${{ secrets.ENV_FILE_DEV }}" > .env
             export PATH=$PATH:${{ secrets.NODE_PATH_DEV }}/bin
