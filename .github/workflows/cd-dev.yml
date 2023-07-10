@@ -1,0 +1,27 @@
+name: Deploy to Development Server
+
+on:
+  push:
+    branch: dev
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd "${{ secrets.PATH_DEV }}"
+            git pull origin dev
+            git status
+            pip install -r requirements.txt
+            echo "${{ secrets.ENV_FILE_DEV }}" > .env
+            export PATH=$PATH:${{ secrets.NODE_PATH_DEV }}/bin
+            pm2 restart orbit

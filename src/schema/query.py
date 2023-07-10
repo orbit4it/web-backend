@@ -1,12 +1,18 @@
 import strawberry
 
-from src.core.attendance import Query as attQuery
-from src.core.division import Query as divQuery
-from src.core.grade import Query as gradeQuery
-from src.core.schedule import Query as scheduleQuery
-from src.core.user import Query as UserQuery
+from core.attendance.query import Query as AttendanceQuery
+from core.schedule.query import Query as ScheduleQuery
+from core.division.query import Query as DivisionQuery
+from core.grade.query import Query as GradeQuery
+from core.user.query import Query as UserQuery
 
 
 @strawberry.type
-class Query(UserQuery, divQuery, gradeQuery, scheduleQuery, attQuery):
+class Query(
+    UserQuery,
+    DivisionQuery,
+    GradeQuery,
+    ScheduleQuery,
+    AttendanceQuery
+):
     ...

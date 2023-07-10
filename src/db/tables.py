@@ -1,8 +1,8 @@
-import src.core.attendance.model
-import src.core.division.model
-import src.core.grade.model
-import src.core.schedule.model
-import src.core.user.model
+import core.attendance.model
+import core.schedule.model
+import core.user.model
+import core.grade.model
+import core.division.model
 
 from .session import Base, engine
 

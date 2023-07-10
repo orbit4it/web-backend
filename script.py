@@ -8,7 +8,8 @@ def seed_database():
     from src.core.division.model import Division
     from src.core.grade.model import Grade
     from src.core.grade.type import GradeLevel, Vocational
-    from src.core.user.model import Role, User, UserPending
+    from src.core.user.model import User, UserPending
+    from src.core.user.type import Role
     from src.db import Session, tables
 
     db = Session()

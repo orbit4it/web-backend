@@ -1,9 +1,9 @@
 import pytest
 
-from src.helpers import jwt
-from src.core.user.model import UserPending
-from src.core.division.model import Division # pyright: ignore
-from src.core.grade.model import Grade # pyright: ignore
+from helpers import jwt
+from core.user.model import UserPending
+from core.division.model import Division
+from core.grade.model import Grade
 from tests.setup import Mock, Request, caller, mock # pyright: ignore
 
 

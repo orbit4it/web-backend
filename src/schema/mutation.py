@@ -1,10 +1,10 @@
 import strawberry
 
-from src.core.attendance import Mutation as AttMutation
-from src.core.division import Mutation as divMutation
-from src.core.grade import Mutation as gradeMutation
-from src.core.schedule import Mutation as scheduleMutation
-from src.core.user import Mutation as UserMutation
+from core.attendance import Mutation as AttMutation
+from core.schedule import Mutation as scheduleMutation
+from core.division.mutation import Mutation as DivisionMutation
+from core.grade.mutation import Mutation as GradeMutation
+from core.user.mutation import Mutation as UserMutation
 
 
 @strawberry.type

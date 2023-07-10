@@ -5,7 +5,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from strawberry.types import Info
 
-from src.helpers.types import Error, Success
+from helpers.types import Error, Success
+from permissions.auth import AdminAuth
 
 from . import model, type
 
@@ -13,7 +14,10 @@ from . import model, type
 @strawberry.type
 class Mutation:
     # permission: admin, superadmin
-    @strawberry.mutation
+    @strawberry.mutation(
+        permission_classes=[AdminAuth],
+        description="(Admin) Create grade"
+    )
     def create_grade(self, info: Info, grade: type.NewGradeInput) -> Success | Error:
         db: Session = info.context["db"]
         new_grade = model.Grade(**vars(grade))  # type: ignore
@@ -30,7 +34,10 @@ class Mutation:
             return Error("Terjadi kesalahan")
 
     # permission: admin, superadmin
-    @strawberry.mutation
+    @strawberry.mutation(
+        permission_classes=[AdminAuth],
+        description="(Admin) Edit grade"
+    )
     def edit_grade(
         self, info: Info, id: int, grade: type.EditGradeInput
     ) -> Success | Error:
@@ -60,7 +67,10 @@ class Mutation:
             return Error("Terjadi kesalahan")
 
     # permission: admin, superadmin
-    @strawberry.mutation
+    @strawberry.mutation(
+        permission_classes=[AdminAuth],
+        description="(Admin) Delete grade"
+    )
     def del_grade(self, info: Info, id: int) -> Success | Error:
         db: Session = info.context["db"]
 
@@ -76,5 +86,4 @@ class Mutation:
             print(e)
 
             db.rollback()
-
             return Error("Terjadi kesalahan")

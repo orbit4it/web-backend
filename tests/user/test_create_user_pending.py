@@ -1,8 +1,8 @@
 import pytest
 
-from src.core.user.model import UserPending
-from src.core.division.model import Division # pyright: ignore
-from src.core.grade.model import Grade # pyright: ignore
+from core.user.model import UserPending
+from core.division.model import Division # pyright: ignore
+from core.grade.model import Grade # pyright: ignore
 from tests.setup import Mock, Request, mock # pyright: ignore
 
 
