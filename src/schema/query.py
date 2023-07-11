@@ -5,14 +5,11 @@ from core.schedule.query import Query as ScheduleQuery
 from core.division.query import Query as DivisionQuery
 from core.grade.query import Query as GradeQuery
 from core.user.query import Query as UserQuery
+from core.subject.query import Query as SubjectQuery
 
 
 @strawberry.type
 class Query(
-    UserQuery,
-    DivisionQuery,
-    GradeQuery,
-    ScheduleQuery,
-    AttendanceQuery
+    UserQuery, DivisionQuery, GradeQuery, ScheduleQuery, AttendanceQuery, SubjectQuery
 ):
     ...

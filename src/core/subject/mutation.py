@@ -14,19 +14,18 @@ from . import model, type
 
 @strawberry.type
 class Mutation:
-
-
     @strawberry.mutation(
         permission_classes=[AdminAuth],
-        description="(AdminAuth) To Create a new Subject"
+        description="(AdminAuth) To Create a new Subject",
     )
-    def create_subject(self, info:Info, input: type.SubjectInput) -> Success | Error:
-        db: Session = info.context['db']
+    def create_subject(self, info: Info, input: type.SubjectInput) -> Success | Error:
+        db: Session = info.context["db"]
+        user_id = info.context["payload"]["sub"]
 
-        new_sbuject = model.Subject(**vars(input))
+        new_subject = model.Subject(author_id=user_id, **vars(input))
 
         try:
-            db.add(new_sbuject)
+            db.add(new_subject)
             db.commit()
 
             return Success(f"Materi {input.title} berhasil ditambahkan")
@@ -35,4 +34,3 @@ class Mutation:
 
             db.rollback()
             return Error(f"Terjadi Kesalahan")
-        

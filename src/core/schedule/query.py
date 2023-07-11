@@ -1,6 +1,6 @@
 # TODO
-# 1. get_schedules: ambil semua row schedules
-# 2. get_schedules_division: ambil semua row schedules dengan division_id
+#
+
 from typing import List
 from sqlalchemy import or_, text
 
@@ -17,9 +17,7 @@ from . import model, type
 
 @strawberry.type
 class Query:
-    @strawberry.field(
-        permission_classes=[UserAuth], description="(Login) list jadwal tersedia"
-    )
+    @strawberry.field(permission_classes=[], description="(Login) list jadwal tersedia")
     def schedules(
         self,
         info: Info,

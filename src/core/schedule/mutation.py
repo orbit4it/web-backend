@@ -20,9 +20,7 @@ from . import model, type
 
 @strawberry.type
 class Mutation:
-    @strawberry.mutation(
-        permission_classes=[AdminAuth], description="(admin) membuat jadwal"
-    )
+    @strawberry.mutation(permission_classes=[], description="(admin) membuat jadwal")
     def create_schedule(
         self, info: Info, schedule: type.CreateScheduleInput
     ) -> Success | Error:
@@ -58,10 +56,12 @@ class Mutation:
 
             query.update(
                 {
+                    model.Schedule.title: schedule.title,
                     model.Schedule.note: schedule.note,
                     model.Schedule.location: schedule.location,
                     model.Schedule.attendance_is_open: schedule.attendance_is_open,
                     model.Schedule.division_id: schedule.division_id,
+                    model.Schedule.subject_id: schedule.subject_id,
                 }  # type: ignore
             )
             db.commit()
