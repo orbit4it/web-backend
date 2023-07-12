@@ -29,5 +29,7 @@ if __name__ == "__main__":
         port=port,
         workers=workers,
         reload=is_dev(),
-        log_config="log.ini"
+        log_config="log.ini",
+        ssl_certfile=None if "SSL_CERTFILE" not in config else config["SSL_CERTFILE"],
+        ssl_keyfile=None if "SSL_KEYFILE" not in config else config["SSL_KEYFILE"],
     )
