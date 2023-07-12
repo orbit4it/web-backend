@@ -33,6 +33,8 @@ class Query:
             else db.query(model.Subject)
         )
 
+        print()
+
         return (
             query.order_by(text(order_by + " " + sort))
             .offset((page - 1) * limit)
