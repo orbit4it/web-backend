@@ -1,0 +1,8 @@
+deploy:
+  stage: deploy
+  tags:
+    - eschool
+  script:
+    - cd /home/ict/www/orbit-project/web-backend
+    - git pull origin main
+    - cat $env > .env
