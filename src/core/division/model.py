@@ -13,3 +13,4 @@ class Division(Base):
     members = relationship("User", back_populates="division")  # type: ignore
 
     schedules = relationship("Schedule", back_populates="division")
+    subjects = relationship("Subject", back_populates="division")

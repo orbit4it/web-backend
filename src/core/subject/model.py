@@ -12,11 +12,18 @@ class Subject(Base):
 
     id = Column(String(36), primary_key=True, default=uuid.uuid4)
     title = Column(Text)
-    media = Column(Text)
     description = Column(Text)
     created_at = Column(DateTime, default=func.now())
+    speaker = Column(Text)
+
+    # path
+    cover = Column(Text)
+    media = Column(Text)
 
     schedules = relationship("Schedule", back_populates="subject")
+
+    division_id = Column(Integer, ForeignKey("divisions.id"))
+    division = relationship("Division", back_populates="subjects")
 
     author_id = Column(String(36), ForeignKey("users.id"))
     author = relationship("User", back_populates="subjects")
