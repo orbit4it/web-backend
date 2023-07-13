@@ -1,3 +1,4 @@
+from fastapi import UploadFile
 import strawberry
 
 from typing import TYPE_CHECKING, Annotated, List, Optional
@@ -17,8 +18,8 @@ class SubjectType:
     description: str
     speaker: str
     created_at: str
-    media: str | None
-    cover: str | None
+    media_url: str | None
+    cover_url: str | None
 
     division: Annotated["DivisionType", strawberry.lazy("core.division.type")] | None
     author: Annotated["Users", strawberry.lazy("core.user.type")] | None
@@ -31,4 +32,7 @@ class SubjectInput:
     title: str
     description: str
     speaker: str
+    media_url: str
+    cover: UploadFile
+
     division_id: int

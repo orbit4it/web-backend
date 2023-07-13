@@ -17,8 +17,8 @@ class Subject(Base):
     speaker = Column(Text)
 
     # path
-    cover = Column(Text)
-    media = Column(Text)
+    cover_url = Column(Text)
+    media_url = Column(Text)
 
     schedules = relationship("Schedule", back_populates="subject")
 
