@@ -1,5 +1,4 @@
 import asyncio
-
 import strawberry
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session

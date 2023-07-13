@@ -6,6 +6,7 @@
 # 4. toggle_attendance_open : ubah value attendance_is_open menjadi False maupun True dengan parameter id
 
 from dataclasses import asdict
+from sqlalchemy import and_
 
 import strawberry
 from sqlalchemy.exc import IntegrityError
@@ -20,7 +21,9 @@ from . import model, type
 
 @strawberry.type
 class Mutation:
-    @strawberry.mutation(permission_classes=[], description="(admin) membuat jadwal")
+    @strawberry.mutation(
+        permission_classes=[AdminAuth], description="(admin) membuat jadwal"
+    )
     def create_schedule(
         self, info: Info, schedule: type.CreateScheduleInput
     ) -> Success | Error:
@@ -28,6 +31,23 @@ class Mutation:
         new_schedule = model.Schedule(**vars(schedule))
 
         try:
+            if len(schedule.token) > 8:
+                return Error("Panjang token tidak boleh melebihi 8 karakter")
+
+            exist = (
+                db.query(model.Schedule)
+                .filter(
+                    and_(
+                        model.Schedule.division_id == schedule.division_id,
+                        model.Schedule.date == schedule.date,
+                    )
+                )
+                .first()
+            )
+
+            if exist:
+                return Error("Tanggal jadwal divisi sudah digunakan")
+
             db.add(new_schedule)
             db.commit()
 
@@ -37,6 +57,12 @@ class Mutation:
             print(e)
 
             db.rollback()
+            if "FOREIGN KEY (`division_id`) REFERENCES" in str(e):
+                return Error("Divisi tidak ditemukan")
+
+            if "for key 'token'" in str(e):
+                return Error("Token sudah digunakan")
+
             return Error("Terjadi kesalahan")
 
     @strawberry.mutation(
@@ -54,6 +80,7 @@ class Mutation:
             if count == 0:
                 return Error("Schedule tidak ditemukan")
 
+            print("PASS")
             query.update(
                 {
                     model.Schedule.title: schedule.title,
@@ -71,6 +98,9 @@ class Mutation:
             print(e)
 
             db.rollback()
+            if "FOREIGN KEY (`division_id`) REFERENCES" in str(e):
+                return Error("Divisi tidak ditemukan")
+
             return Error("Terjadi kesalahan")
 
     @strawberry.mutation(

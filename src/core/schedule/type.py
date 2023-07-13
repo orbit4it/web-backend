@@ -9,6 +9,18 @@ if TYPE_CHECKING:
 
 
 @strawberry.type
+class ScheduleGroupDateType:
+    date: str
+    count: int
+
+
+@strawberry.type
+class ScheduleByDateType:
+    id: str
+    division: Annotated["DivisionType", strawberry.lazy("core.division.type")] | None
+
+
+@strawberry.type
 class ScheduleType:
     id: str
     title: str | None
@@ -36,7 +48,7 @@ class ScheduleType:
 class CreateScheduleInput:
     title: str
     note: str
-    date: Optional[str] = None
+    date: str
     location: str
     token: str
     attendance_is_open: Optional[bool] = False

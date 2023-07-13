@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from strawberry.types import Info
 
-from permissions.auth import UserAuth
+from permissions.auth import AdminAuth, UserAuth
 from helpers.types import Error, Success
 
 from ..schedule.model import Schedule as ScheduleModel
@@ -12,6 +12,26 @@ from . import model, type
 
 @strawberry.type
 class Mutation:
+    @strawberry.mutation(
+        permission_classes=[AdminAuth], description="(admin) hapus data kehadiran"
+    )
+    def del_attendance_by_id(self, info: Info, id: str) -> Success | Error:
+        db: Session = info.context["db"]
+
+        try:
+            query = db.query(model.Attendance).filter(model.Attendance.id == id)
+            count = query.count()
+            query.delete()
+
+            db.commit()
+
+            return Success(f"{count} kehadiran berhasil dihapus")
+        except IntegrityError as e:
+            print(e)
+
+            db.rollback()
+            return Error("Terjadi kesalahan")
+
     @strawberry.mutation(
         permission_classes=[UserAuth], description="Isi kehadiran user"
     )

@@ -17,7 +17,7 @@ from . import model, type
 class Query:
     @strawberry.field(
         permission_classes=[UserAuth],
-        description="Persentase kehadiran user di setiap schedule divisi",
+        description="(Login) Insigth kehadiran user di setiap jadwal divisi",
     )
     def my_attendance_score(self, info: Info) -> type.MyAttendanceScore | Error:
         db: Session = info.context["db"]
@@ -49,7 +49,7 @@ class Query:
 
     @strawberry.field(
         permission_classes=[UserAuth],
-        description="Persentase kehadiran user dalam satu schedule",
+        description="(Login) Insigth kehadiran user dalam satu jadwal",
     )
     def attendance_schedule_score(
         self, info: Info, schedule_id: str
@@ -63,6 +63,9 @@ class Query:
 
             if not schedule:
                 return Error("Schedule tidak ditemukan")
+
+            if not schedule.division_id:
+                return Error("Schedule tidak memiliki divisi")
 
             count_attendance = (
                 db.query(model.Attendance)
