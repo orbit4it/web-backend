@@ -1,6 +1,3 @@
-import asyncio
-from fastapi import File, UploadFile
-
 import strawberry
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -14,15 +11,13 @@ from cloudinary.exceptions import (
     RateLimited,
 )
 from helpers.types import Error, Success
-from helpers.validation import ValidationError
-from permissions import AdminAuth, NotAuth, SuperAdminAuth
+from permissions import AdminAuth
 
 from . import model, type
 
 
 @strawberry.type
 class Mutation:
-    # NOTE: BELOM DICOBA, teuing kumaha pick file di ui graphql na atawa kudu nyieu html & js na?
     @strawberry.mutation(
         permission_classes=[AdminAuth],
         description="(AdminAuth) To Create a new Subject",
@@ -34,19 +29,20 @@ class Mutation:
         user_id = info.context["payload"]["sub"]
 
         try:
-            cover_content = await input.cover.read()
+            cover_content = await input.cover.read() # type: ignore
 
             if len(cover_content) > 3 * 1024 * 1024:
                 return Error("Ukuran cover terlalu besar")
 
-            if input.cover.content_type not in ["image/jpeg", "image/jpg", "image/png"]:
+            if input.cover.content_type not in ["image/jpeg", "image/jpg", "image/png"]: # type: ignore
                 return Error("Format cover tidak diperbolehkan")
 
             upload_to_cloud = cloudinary.uploader.upload(
                 cover_content, folder="web-orbit"
             )
 
-            await input.cover.close()
+            await input.cover.close() # type: ignore
+            del input.cover
 
             new_subject = model.Subject(
                 author_id=user_id,

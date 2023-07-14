@@ -1,7 +1,7 @@
-from fastapi import UploadFile
 import strawberry
+from strawberry.file_uploads import Upload
 
-from typing import TYPE_CHECKING, Annotated, List, Optional
+from typing import TYPE_CHECKING, Annotated, List
 
 
 if TYPE_CHECKING:
@@ -33,6 +33,6 @@ class SubjectInput:
     description: str
     speaker: str
     media_url: str
-    cover: UploadFile
+    cover: Upload
 
     division_id: int
