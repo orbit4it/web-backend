@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Enum, Integer, String
 from sqlalchemy.orm import relationship
 
-from src.db.session import Base
+from db.database import Base
 from . import type
 
 

@@ -1,21 +1,17 @@
-import strawberry
+import pytest
 
 from datetime import datetime, timedelta
-from strawberry.extensions import SchemaExtension
-from mock_alchemy.mocking import UnifiedAlchemyMagicMock, mock
-
-from src.schema import Query, Mutation
-from src.core.user.model import User, UserPending
-from src.core.division.model import Division # pyright: ignore
-from src.core.grade.model import Grade # pyright: ignore
-from tests.setup import Request, Case
+from core.user.model import User, UserPending
+from core.division.model import Division # pyright: ignore
+from core.grade.model import Grade # pyright: ignore
+from tests.setup import Mock, Request, mock, caller # pyright: ignore
 
 
-session_mock = UnifiedAlchemyMagicMock(data=[
+data = [
     (
         [
-            mock.call.query(UserPending),
-            mock.call.filter(UserPending.registration_token == "token")
+            caller.call.query(UserPending),
+            caller.call.filter(UserPending.registration_token == "token")
         ],
         [
             UserPending(
@@ -29,22 +25,66 @@ session_mock = UnifiedAlchemyMagicMock(data=[
             )
         ]
     )
-])
+]
 
 
-class MockExtension(SchemaExtension):
-    def on_operation(self):
-        self.execution_context.context["db"] = session_mock
-
-
-schema = strawberry.Schema(
-    query=Query,
-    mutation=Mutation,
-    extensions=[MockExtension]
+@pytest.mark.parametrize(
+    "mock,input,expected",
+    [
+        (
+            data,
+            {
+                "token": "token",
+                "password": "password"
+            },
+            {
+                "data": {
+                    "createUser": {
+                        "message": "Registrasi berhasil, kamu bisa login sekarang!"
+                    }
+                },
+                "count": 1,
+            }
+        ),
+        (
+            data,
+            {
+                "token": "something",
+                "password": "password"
+            },
+            {
+                "data": {
+                    "createUser": {
+                        "error": "Token registrasi tidak valid"
+                    }
+                },
+                "count": 0,
+            }
+        ),
+        (
+            data,
+            {
+                "token": "token",
+                "password": "pass"
+            },
+            {
+                "data": {
+                    "createUser": {
+                        "error": "Password minimal 8 karakter"
+                    }
+                },
+                "count": 0,
+            }
+        ),
+    ],
+    ids=[
+        "success: create user",
+        "error: token not found",
+        "invalid: password"
+    ],
+    indirect=["mock"]
 )
-
-
-def test_create_user():
+def test_create_user(mock: Mock, input, expected):
     query = """
         mutation TestCreateUser($token: String!, $password: String!) {
           createUser(
@@ -61,64 +101,15 @@ def test_create_user():
         }
     """
 
-    test_cases = [
-        Case(
-            name="Success create user",
-            input={
-                "token": "token",
-                "password": "password"
-            },
-            expected={
-                "data": {
-                    "createUser": {
-                        "message": "Registrasi berhasil, kamu bisa login sekarang!"
-                    }
-                },
-                "count": 1,
-            }
-        ),
-        Case(
-            name="Error token not found",
-            input={
-                "token": "something",
-                "password": "password"
-            },
-            expected={
-                "data": {
-                    "createUser": {
-                        "error": "Token registrasi tidak valid"
-                    }
-                },
-                "count": 1,
-            }
-        ),
-        Case(
-            name="Invalid password",
-            input={
-                "token": "token",
-                "password": "pass"
-            },
-            expected={
-                "data": {
-                    "createUser": {
-                        "error": "Password minimal 8 karakter"
-                    }
-                },
-                "count": 1,
-            }
-        ),
-    ]
+    result = mock.schema.execute_sync(
+        query,
+        context_value={"request": Request()},
+        variable_values={
+            "token": input["token"],
+            "password": input["password"]
+        }
+    )
 
-    for test_case in test_cases:
-        result = schema.execute_sync(
-            query,
-            context_value={"request": Request()},
-            variable_values={
-                "token": test_case.input["token"],
-                "password": test_case.input["password"]
-            }
-        )
-
-        assert result.errors is None
-        assert result.data == test_case.expected["data"]  # type: ignore
-        assert session_mock.query(User).count() == test_case.expected["count"]
+    assert result.errors is None
+    assert result.data == expected["data"]
+    assert mock.session.query(User).count() == expected["count"]

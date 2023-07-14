@@ -1,7 +1,7 @@
 from time import time
 from jose import jwt
 
-from src.config import config
+from config import config
 
 
 def encode(user_id: str, role: str, division_id: int):

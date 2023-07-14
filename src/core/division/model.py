@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from src.db.session import Base
+from db.database import Base
 
 
 class Division(Base):
@@ -10,4 +10,6 @@ class Division(Base):
     name = Column(String(255), nullable=False)
     wa_group_link = Column(String(255), nullable=False)
 
-    members = relationship("User", back_populates="division")
+    members = relationship("User", back_populates="division")  # type: ignore
+
+    schedules = relationship("Schedule", back_populates="division")

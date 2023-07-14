@@ -1,31 +1,67 @@
-import strawberry
+import pytest
 
-from strawberry.extensions import SchemaExtension
-from mock_alchemy.mocking import UnifiedAlchemyMagicMock
-
-from src.core.user import Query, Mutation
-from src.core.user.model import UserPending
-from src.core.division.model import Division # pyright: ignore
-from src.core.grade.model import Grade # pyright: ignore
-from tests.setup import Request, Case
+from core.user.model import UserPending
+from core.division.model import Division # pyright: ignore
+from core.grade.model import Grade # pyright: ignore
+from tests.setup import Mock, Request, mock # pyright: ignore
 
 
-session_mock = UnifiedAlchemyMagicMock()
-
-
-class MockExtension(SchemaExtension):
-    def on_operation(self):
-        self.execution_context.context["db"] = session_mock
-
-
-schema = strawberry.Schema(
-    query=Query,
-    mutation=Mutation,
-    extensions=[MockExtension]
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        (
+            {
+                "request": Request(),
+                "email": "john@gmail.com"
+            },
+            {
+                "errors": False,
+                "data": {
+                    "createUserPending": {
+                        "message":
+                        "Akun sedang diverifikasi, mohon tunggu email verifikasi"
+                    }
+                },
+                "count": 1
+            }
+        ),
+        (
+            {
+                "request": Request(headers={
+                    "Authorization": "Bearer token"
+                }),
+                "email": "john@gmail.com"
+            },
+            {
+                "errors": True,
+                "data": None,
+                "count": 0
+            }
+        ),
+        (
+            {
+                "request": Request(),
+                "email": "john@gmail"
+            },
+            {
+                "errors": False,
+                "data": {
+                    "createUserPending": {
+                        "error":
+                        "Email tidak valid"
+                    }
+                },
+                "count": 0
+            }
+        ),
+    ],
+    ids=[
+        "success: create user pending",
+        "error: user has already logged in",
+        "invalid: email"
+    ]
 )
-
-
-def test_create_user_pending():
+def test_create_user_pending(mock: Mock, input, expected):
     query = """
         mutation TestCreateUserPending($email: String!) {
           createUserPending(userPending: {
@@ -46,69 +82,16 @@ def test_create_user_pending():
         }
     """
 
-    test_cases = [
-        Case(
-            name="Success create user pending",
-            input={
-                "request": Request(),
-                "email": "john@gmail.com"
-            },
-            expected={
-                "errors": False,
-                "data": {
-                    "createUserPending": {
-                        "message":
-                        "Akun sedang diverifikasi, mohon tunggu email verifikasi"
-                    }
-                },
-                "count": 1
-            }
-        ),
-        Case(
-            name="Error user has logged in",
-            input={
-                "request": Request(headers={
-                    "Authorization": "Bearer token"
-                }),
-                "email": "john@gmail.com"
-            },
-            expected={
-                "errors": True,
-                "data": None,
-                "count": 1
-            }
-        ),
-        Case(
-            name="Invalid email",
-            input={
-                "request": Request(),
-                "email": "john"
-            },
-            expected={
-                "errors": False,
-                "data": {
-                    "createUserPending": {
-                        "error":
-                        "Email tidak valid"
-                    }
-                },
-                "count": 1
-            }
-        ),
-    ]
+    result = mock.schema.execute_sync(
+        query,
+        context_value={"request": input["request"]},
+        variable_values={"email": input["email"]}
+    )
 
-    for test_case in test_cases:
-        result = schema.execute_sync(
-            query,
-            context_value={"request": test_case.input["request"]},
-            variable_values={"email": test_case.input["email"]}
-        )
+    if expected["errors"]:
+        assert result.errors is not None
+    else:
+        assert result.errors is None
 
-        if test_case.expected["errors"]:
-            assert result.errors is not None
-        else:
-            assert result.errors is None
-
-        assert result.data == test_case.expected["data"]  # type: ignore
-        assert session_mock.query(UserPending).count() == test_case.expected["count"]
-
+    assert result.data == expected["data"]
+    assert mock.session.query(UserPending).count() == expected["count"]
