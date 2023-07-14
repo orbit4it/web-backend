@@ -46,8 +46,8 @@ async def cloud_upload_file(
 
 async def cloud_remove_file(field_name: str = "file", url: str = ""):
     try:
-        public_id = url.split("/")[-1].split(".")["0"]
-        remove = await cloudinary.uploader.destroy(f"web-orbit/{public_id}")
+        public_id = url.split("/")[-1].split(".")[0]
+        remove = cloudinary.uploader.destroy(f"web-orbit/{public_id}")
 
         is_removed = remove["result"] == "ok"
 

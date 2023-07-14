@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from strawberry.types import Info
 
 from helpers import jwt
-from helpers.types import Error
+from helpers.types import Error, Success
 from permissions import NotAuth, SuperAdminAuth, UserAuth
 
 from . import model, type
@@ -12,6 +12,11 @@ from . import model, type
 
 @strawberry.type
 class Query:
+    @strawberry.field(permission_classes=[])
+    def clear_cookie(self, info: Info) -> Success:
+        info.context["response"].delete_cookie(key="refresh_token")
+
+        return Success("Sampai jumpa")
 
 
     @strawberry.field(
