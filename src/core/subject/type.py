@@ -28,11 +28,22 @@ class SubjectType:
 
 
 @strawberry.input
-class SubjectInput:
+class NewSubjectInput:
     title: str
     description: str
     speaker: str
     media_url: str
     cover: Upload
+
+    division_id: int
+
+
+@strawberry.input
+class EditSubjectInput:
+    title: str
+    description: str
+    speaker: str
+    media_url: str
+    cover: Upload | None
 
     division_id: int

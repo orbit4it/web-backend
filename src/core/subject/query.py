@@ -17,6 +17,7 @@ class Query:
         search: str = "",
         page: int = 1,
         limit: int = 20,
+        division_id: int = 0,
         order_by: str = "created_at",
         sort: str = "desc",
     ) -> List[type.SubjectType]:
@@ -33,7 +34,8 @@ class Query:
             else db.query(model.Subject)
         )
 
-        print()
+        if division_id != 0:
+            query = query.filter(or_(model.Subject.division_id == division_id))
 
         return (
             query.order_by(text(order_by + " " + sort))
