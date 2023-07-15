@@ -52,3 +52,6 @@ class Request():
 class Response():
     def set_cookie(self, key, value, httponly, secure, samesite):
         ...
+
+    def delete_cookie(self, key):
+        ...
