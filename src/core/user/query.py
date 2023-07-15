@@ -38,7 +38,7 @@ class Query:
             key="refresh_token",
             value=user.refresh_token,
             httponly=True,
-            secure=info.context["request"].url.scheme == "https",
+            secure=True,
             samesite="None",
         )
 
