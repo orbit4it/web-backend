@@ -38,7 +38,10 @@ class Query:
             key="refresh_token",
             value=user.refresh_token,
             httponly=True,
+            secure=info.context['request'].secure == 'https',
+            sameSite="None"
         )
+
 
         return type.Token(access_token=token)
 
