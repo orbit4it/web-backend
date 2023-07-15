@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from core.user.type import Users
     from core.schedule.type import ScheduleType
     from core.division.type import DivisionType
+    from core.comment.type import CommentType
 #     from core.quiz.type import QuizType
 
 
@@ -25,6 +26,7 @@ class SubjectType:
     author: Annotated["Users", strawberry.lazy("core.user.type")] | None
 
     schedules: List[Annotated["ScheduleType", strawberry.lazy("core.schedule.type")]]
+    comments: List[Annotated["CommentType", strawberry.lazy("core.comment.type")]]
 
 
 @strawberry.input

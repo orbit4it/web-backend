@@ -22,6 +22,8 @@ class Subject(Base):
 
     schedules = relationship("Schedule", back_populates="subject")
 
+    comments = relationship("Comment", back_populates="subject")
+
     division_id = Column(Integer, ForeignKey("divisions.id"))
     division = relationship("Division", back_populates="subjects")
 
