@@ -39,10 +39,16 @@ class Mock():
 
 
 class Request():
-    def __init__(self, headers: dict = {}, cookies: dict = {}):
+    class URL():
+        def __init__(self, scheme: str = "http"):
+            self.scheme = scheme
+
+    def __init__(self, headers: dict = {}, cookies: dict = {}, url: URL = URL()):
         self.headers = headers
         self.cookies = cookies
+        self.url = url
+
 
 class Response():
-    def set_cookie(self, key, value, httponly):
+    def set_cookie(self, key, value, httponly, secure, samesite):
         ...
