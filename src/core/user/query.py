@@ -80,7 +80,11 @@ class Query:
         if "refresh_token" not in cookies:
             return Error("Refresh token tidak ditemukan")
 
-        info.context["response"].delete_cookie("refresh_token")
+        info.context["response"].delete_cookie(
+            key="refresh_token",
+            samesite="None",
+            secure=True
+        )
         return Success("Logout berhasil")
 
 
