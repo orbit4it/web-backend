@@ -6,6 +6,7 @@ from core.division.mutation import Mutation as DivisionMutation
 from core.grade.mutation import Mutation as GradeMutation
 from core.user.mutation import Mutation as UserMutation
 from core.subject.mutation import Mutation as SubjectMutation
+from core.comment.mutation import Mutation as CommentMutation
 
 
 @strawberry.type
@@ -16,5 +17,6 @@ class Mutation(
     ScheduleMutation,
     AttMutation,
     SubjectMutation,
+    CommentMutation,
 ):
     ...

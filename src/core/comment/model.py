@@ -1,6 +1,5 @@
 import uuid
-from click import DateTime
-from sqlalchemy import Column, ForeignKey, Integer, String, Text, func
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import relationship
 
 from db.database import Base
@@ -19,5 +18,5 @@ class Comment(Base):
     user_id = Column(String(36), ForeignKey("users.id"))
     user = relationship("User", back_populates="comments")
 
-    subject_id = Column(String(36), ForeignKey("subjects.id"))
+    subject_id = Column(String(36), ForeignKey("subjects.id", ondelete="SET NULL"))
     subject = relationship("Subject", back_populates="comments")
