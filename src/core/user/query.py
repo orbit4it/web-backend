@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from strawberry.types import Info
 
 from helpers import jwt
-from helpers.types import Error
+from helpers.types import Error, Success
 from permissions import NotAuth, SuperAdminAuth, UserAuth
 
 from . import model, type
@@ -38,7 +38,10 @@ class Query:
             key="refresh_token",
             value=user.refresh_token,
             httponly=True,
+            secure=True,
+            samesite="None",
         )
+
 
         return type.Token(access_token=token)
 
@@ -65,6 +68,24 @@ class Query:
         )
 
         return type.Token(access_token=token)
+
+
+    @strawberry.field(
+        permission_classes=[UserAuth],
+        description="(Auth) Logout with clear refresh_token cookie"
+    )
+    def user_logout(self, info: Info) -> Success | Error:
+        cookies = info.context["request"].cookies
+
+        if "refresh_token" not in cookies:
+            return Error("Refresh token tidak ditemukan")
+
+        info.context["response"].delete_cookie(
+            key="refresh_token",
+            samesite="None",
+            secure=True
+        )
+        return Success("Logout berhasil")
 
 
     # normal user get users
