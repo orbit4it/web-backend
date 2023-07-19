@@ -32,6 +32,9 @@ class User(Base):
 
     attendances = relationship("Attendance", back_populates="user")
 
+    transactions = relationship("Balance", back_populates="user")
+
+    
 
 class UserPending(Base):
     __tablename__ = "users_pending"

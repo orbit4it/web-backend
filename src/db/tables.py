@@ -3,6 +3,7 @@ import core.schedule.model
 import core.user.model
 import core.grade.model
 import core.division.model
+import core.finance.model
 
 from .database import Base, engine
 
