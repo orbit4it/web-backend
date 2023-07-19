@@ -33,6 +33,8 @@ class User(Base):
 
     subjects = relationship("Subject", back_populates="author")
 
+    comments = relationship("Comment", back_populates="user")
+
 
 class UserPending(Base):
     __tablename__ = "users_pending"

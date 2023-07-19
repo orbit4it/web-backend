@@ -4,6 +4,7 @@ import core.user.model
 import core.grade.model
 import core.division.model
 import core.subject.model
+import core.comment.model
 
 from .database import Base, engine
 
