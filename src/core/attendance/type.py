@@ -22,6 +22,8 @@ class AttendanceType:
     feedback: str
     suggestion: str
     reason: str
+    created_at: str
+
     schedule: Annotated["ScheduleType", strawberry.lazy("core.schedule.type")]
     user: Annotated["Users", strawberry.lazy("core.user.type")]
 
@@ -47,4 +49,6 @@ class FillAttendanceInput:
     feedback: str
     suggestion: str
     reason: str
-    schedule_id: str
+
+    date: str
+    division_id: int

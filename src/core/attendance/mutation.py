@@ -1,3 +1,4 @@
+from sqlalchemy import and_
 import strawberry
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -43,7 +44,10 @@ class Mutation:
 
         try:
             query = db.query(ScheduleModel).filter(
-                ScheduleModel.id == attendance.schedule_id
+                and_(
+                    ScheduleModel.date == attendance.date,
+                    ScheduleModel.division_id == attendance.division_id,
+                )
             )
             schedule = query.first()
 
@@ -67,7 +71,15 @@ class Mutation:
                     f"Kehadiran sudah diisi dengan status {attendance_exist.status.upper()}"
                 )
 
-            new_attendance = model.Attendance(user_id=user_id, **vars(attendance))
+            new_attendance = model.Attendance(
+                user_id=user_id,
+                status=attendance.status,
+                rating=attendance.rating,
+                feedback=attendance.feedback,
+                suggestion=attendance.suggestion,
+                reason=attendance.reason,
+                schedule_id=schedule.id,
+            )
 
             db.add(new_attendance)
             db.commit()

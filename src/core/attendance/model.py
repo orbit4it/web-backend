@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, Enum, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import relationship
 
 from db.database import Base
@@ -17,6 +17,7 @@ class Attendance(Base):
     feedback = Column(Text)
     suggestion = Column(Text)
     reason = Column(Text)
+    created_at = Column(DateTime, default=func.now())
 
     schedule_id = Column(String(36), ForeignKey("schedules.id"))
     schedule = relationship("Schedule", back_populates="attendances")
