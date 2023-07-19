@@ -6,5 +6,6 @@ deploy:
     - cd /home/ict/www/orbit-project/web-backend
     - git pull origin main
     - cat $env > .env
+    - docker-compose -f ../docker-compose.yml restart backend
   only:
     - main
