@@ -31,7 +31,7 @@ class UserPendingInput:
     name: str
     email: str
     motivation: str
-    nis: str
+    nis: str | None
     division_id: int
     grade_id: int
 

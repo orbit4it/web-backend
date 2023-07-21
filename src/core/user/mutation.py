@@ -32,10 +32,15 @@ class Mutation:
             return Error(str(e))
 
         user_pending_db = model.UserPending(**vars(user_pending))
-        db.add(user_pending_db)
-        db.commit()
 
-        return Success("Akun sedang diverifikasi, mohon tunggu email verifikasi")
+        try:
+            db.add(user_pending_db)
+            db.commit()
+
+            return Success("Akun sedang diverifikasi, mohon tunggu email verifikasi")
+        except:
+            db.rollback()
+            return Error("Terjadi kesalahan")
 
 
     @strawberry.mutation(
