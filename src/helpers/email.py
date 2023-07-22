@@ -37,7 +37,7 @@ async def send_group_link(receiver: str, division_name: str, division_link: str)
         </div>
 
         <div>
-            Anda telah diterima sebagai anggota ORBIT di Divisi Web Development. 
+            Anda telah diterima sebagai anggota ORBIT di Divisi {division_name}. 
             Untuk selanjutnya, silahkan join ke grup Whatsapp dengan menggunakan link berikut :
         </div>
         
