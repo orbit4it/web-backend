@@ -47,7 +47,7 @@ class Mutation:
         permission_classes=[NotAuth],
         description="(NotAuth) After user gets the registration token from email, user can re-register to create account"
     )
-    def create_user(
+    async def create_user(
         self, info: Info, registration_token: str, password: str
     ) -> Success | Error:
         db: Session = info.context["db"]
@@ -77,8 +77,14 @@ class Mutation:
             user_pending_query.delete()
             db.add(user)
             db.commit()
+            
+            asyncio.create_task(email.send_group_link(
+                receiver=user_pending.email,
+                division_link=user_pending.division.wa_group_link,
+                division_name=user_pending.division.name,
+            ))
 
-            return Success("Registrasi berhasil, kamu bisa login sekarang!")
+            return Success("Registrasi berhasil, kamu bisa login sekarang dan jangan lupa cek email!")
 
         except IntegrityError as e:
             db.rollback()
@@ -112,7 +118,7 @@ class Mutation:
         }) # type: ignore
         db.commit()
 
-        asyncio.create_task(email.send(
+        asyncio.create_task(email.send_verification(
             user_pending.email, # type: ignore
             user_pending.division.name,
             registration_token
