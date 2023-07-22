@@ -24,6 +24,7 @@ class CashLevel(enum.Enum):
 @strawberry.type
 class BalanceType:
     id: str
+    title: str
     date: str
     note: str
     amount: int
@@ -37,6 +38,18 @@ class BalanceType:
 
 @strawberry.input
 class NewBalanceInput:
+    title: str
+    date: str
+    note: str
+    amount: int
+
+    flow: CashFlow
+    level: CashLevel
+
+
+@strawberry.input
+class EditBalanceInput:
+    title: str
     date: str
     note: str
     amount: int

@@ -12,9 +12,11 @@ class Balance(Base):
     __tablename__ = "balances"
 
     id = Column(String(36), primary_key=True, default=uuid.uuid4)
+    title = Column(Text)
     date = Column(DateTime, nullable=False)
     note = Column(Text)
     amount = Column(Integer, nullable=False)
+
     flow = Column(Enum(type.CashFlow), nullable=False)
     level = Column(Enum(type.CashLevel), nullable=False)
     created_at = Column(DateTime, default=func.now())
