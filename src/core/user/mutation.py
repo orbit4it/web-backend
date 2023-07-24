@@ -77,11 +77,11 @@ class Mutation:
             user_pending_query.delete()
             db.add(user)
             db.commit()
-            
+
             asyncio.create_task(email.send_group_link(
-                receiver=user_pending.email,
-                division_link=user_pending.division.wa_group_link,
-                division_name=user_pending.division.name,
+                receiver=user.email,
+                division_link=user.division.wa_group_link,
+                division_name=user.division.name,
             ))
 
             return Success("Registrasi berhasil, kamu bisa login sekarang dan jangan lupa cek email!")
