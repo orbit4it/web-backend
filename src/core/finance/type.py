@@ -1,5 +1,5 @@
 import enum
-from typing import Annotated, TYPE_CHECKING
+from typing import Annotated, TYPE_CHECKING, List
 
 
 import strawberry
@@ -24,16 +24,35 @@ class CashLevel(enum.Enum):
 @strawberry.type
 class BalanceType:
     id: str
-    title: str
+    title: str | None
     date: str
-    note: str
+    note: str | None
     amount: int
     created_at: str
 
     flow: CashFlow
     level: CashLevel
 
-    user: Annotated["Users", strawberry.lazy("core.user.type")]
+    user: Annotated["Users", strawberry.lazy("core.user.type")] | None
+
+
+@strawberry.type
+class BalanceTotals:
+    total_income: int
+    total_outcome: int
+    total_balance: int
+
+
+@strawberry.type
+class BalanceGraphDetail:
+    time: str
+    total: str
+
+
+@strawberry.type
+class BalanceGraph:
+    income: List[BalanceGraphDetail]
+    outcome: List[BalanceGraphDetail]
 
 
 @strawberry.input
