@@ -73,6 +73,8 @@ class Mutation:
             refresh_token=token.generate(64)
         )
 
+        division = user_pending.division
+
         try:
             user_pending_query.delete()
             db.add(user)
@@ -80,8 +82,8 @@ class Mutation:
 
             asyncio.create_task(email.send_group_link(
                 receiver=user.email,
-                division_link=user.division.wa_group_link,
-                division_name=user.division.name,
+                division_link=division.wa_group_link,
+                division_name=division.name,
             ))
 
             return Success("Registrasi berhasil, kamu bisa login sekarang dan jangan lupa cek email!")
