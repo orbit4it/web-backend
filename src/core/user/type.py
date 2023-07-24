@@ -42,7 +42,7 @@ class UserPending:
     name: str
     email: str
     motivation: str
-    nis: str
+    nis: str | None
     registration_token: str
     expired_at: datetime
     division_id: int
