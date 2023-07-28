@@ -47,6 +47,8 @@ class UserPending:
     expired_at: datetime
     division_id: int
     grade_id: int
+    division: Annotated["DivisionType", strawberry.lazy("core.division.type")]
+    grade: Annotated["GradeType", strawberry.lazy("core.grade.type")]
 
 
 @strawberry.type

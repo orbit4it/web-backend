@@ -8,5 +8,8 @@ class NotAuth(BasePermission):
 
     def has_permission(self, source, info: Info, **kwargs) -> bool:
         request: Request = info.context["request"]
-        return ("refresh_token" not in request.cookies and
-            "Authorization" not in request.headers)
+        if ("refresh_token" in request.cookies or
+            "Authorization" in request.headers):
+            info.context["response"].status_code = 401
+            return False
+        return True

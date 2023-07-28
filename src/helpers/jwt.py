@@ -24,7 +24,7 @@ def decode(token: str) -> dict:
         )
         if "sub" and "role" and "div" and "exp" not in payload:
             raise Exception
-    except:
-        raise Exception
+    except Exception as error:
+        raise error
 
     return payload
