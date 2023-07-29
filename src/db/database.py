@@ -10,7 +10,14 @@ DB_URL = f"mysql+pymysql://\
 @{config['DB_HOST']}\
 /{config['DB_NAME']}"\
 
-engine = create_engine(DB_URL, pool_pre_ping=True, pool_recycle=300)
+engine = create_engine(
+    DB_URL,
+    pool_size=10,
+    max_overflow=20,
+    pool_pre_ping=True,
+    pool_recycle=300
+)
+
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
