@@ -4,11 +4,9 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from config import config
-from helpers.others import get_greeting
 
 async def send_verification(receiver: str, division:str, token: str):
     mail_content = f"""
-    <div>Assalammualaikum, {get_greeting()}</div>
     <div>Salam hangat dari ORBIT.</div>
     <br>
     <div>Selamat!</div>
@@ -28,7 +26,6 @@ async def send_verification(receiver: str, division:str, token: str):
 
 async def send_group_link(receiver: str, division_name: str, division_link: str):
     mail_content = f"""
-        <div>Assalammualaikum, {get_greeting()}</div>
         <div>Salam hangat dari ORBIT.</div>
         <br>
 

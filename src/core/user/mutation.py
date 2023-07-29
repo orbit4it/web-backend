@@ -48,7 +48,7 @@ class Mutation:
         description="(NotAuth) After user gets the registration token from email, user can re-register to create account"
     )
     async def create_user(
-        self, info: Info, registration_token: str, password: str
+        self, info: Info, registration_token: str, password: str, grade_id: int
     ) -> Success | Error:
         db: Session = info.context["db"]
 
@@ -69,7 +69,7 @@ class Mutation:
             password=bcrypt.hash(password),
             nis=user_pending.nis,
             division_id=user_pending.division_id,
-            grade_id=user_pending.grade_id,
+            grade_id=grade_id,
             refresh_token=token.generate(64)
         )
 
