@@ -297,6 +297,7 @@ class Mutation:
             return Error(str(e))
 
         query = db.query(model.User).filter(model.User.id == user_id)
+
         if query.count() == 0:
             return Error("User tidak ditemukan")
 

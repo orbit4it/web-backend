@@ -55,8 +55,10 @@ def validate_user_pending(user_pending: UserPendingInput):
 
 def validate_edit_user(user: EditUserInput):
     try:
-        phonenumbers.parse(user.phone_number, "ID")
-        max_len("Nomor telepon", user.phone_number, 13)
+        if user.phone_number:
+            phonenumbers.parse(user.phone_number, "ID")
+            max_len("Nomor telepon", user.phone_number, 13)
+
         if user.nis:
             max_len("NIS", user.nis, 10)
 
