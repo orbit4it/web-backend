@@ -94,7 +94,8 @@ async def test_create_user(mock: Mock, input, expected):
         mutation TestCreateUser($token: String!, $password: String!) {
           createUser(
             registrationToken: $token,
-            password: $password
+            password: $password,
+            gradeId: 1
           ) {
             ... on Success {
               message

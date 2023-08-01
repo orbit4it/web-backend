@@ -15,7 +15,7 @@ async def get_db_session():
     try:
         yield session
     finally:
-        session.close
+        session.close()
 
 
 async def get_context(db=Depends(get_db_session)):

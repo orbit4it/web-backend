@@ -48,7 +48,7 @@ class Mutation:
         description="(NotAuth) After user gets the registration token from email, user can re-register to create account"
     )
     async def create_user(
-        self, info: Info, registration_token: str, password: str
+        self, info: Info, registration_token: str, password: str, grade_id: int
     ) -> Success | Error:
         db: Session = info.context["db"]
 
@@ -69,19 +69,21 @@ class Mutation:
             password=bcrypt.hash(password),
             nis=user_pending.nis,
             division_id=user_pending.division_id,
-            grade_id=user_pending.grade_id,
+            grade_id=grade_id,
             refresh_token=token.generate(64)
         )
+
+        division = user_pending.division
 
         try:
             user_pending_query.delete()
             db.add(user)
             db.commit()
-            
+
             asyncio.create_task(email.send_group_link(
-                receiver=user_pending.email,
-                division_link=user_pending.division.wa_group_link,
-                division_name=user_pending.division.name,
+                receiver=user.email,
+                division_link=division.wa_group_link,
+                division_name=division.name,
             ))
 
             return Success("Registrasi berhasil, kamu bisa login sekarang dan jangan lupa cek email!")
