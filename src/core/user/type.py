@@ -24,6 +24,7 @@ class Users:
     role: Role
     division: Annotated["DivisionType", strawberry.lazy("core.division.type")]
     grade: Annotated["GradeType", strawberry.lazy("core.grade.type")]
+    created_at: str
 
 
 @strawberry.input
@@ -31,7 +32,7 @@ class UserPendingInput:
     name: str
     email: str
     motivation: str
-    nis: str
+    nis: str | None
     division_id: int
     grade_id: int
 
@@ -42,11 +43,13 @@ class UserPending:
     name: str
     email: str
     motivation: str
-    nis: str
+    nis: str | None
     registration_token: str
     expired_at: datetime
     division_id: int
     grade_id: int
+    division: Annotated["DivisionType", strawberry.lazy("core.division.type")]
+    grade: Annotated["GradeType", strawberry.lazy("core.grade.type")]
 
 
 @strawberry.type

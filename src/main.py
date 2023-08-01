@@ -21,5 +21,15 @@ app.include_router(graphql_app, prefix="/graphql")
 if __name__ == "__main__":
     host = str(config["HOST"])
     port = int(str(config["PORT"]))
+    workers = int(str(config["WORKERS"]))
 
-    uvicorn.run(app="main:app", host=host, port=port, reload=is_dev())
+    uvicorn.run(
+        app="main:app",
+        host=host,
+        port=port,
+        workers=workers,
+        reload=is_dev(),
+        log_config="log.ini",
+        ssl_certfile=None if "SSL_CERTFILE" not in config else config["SSL_CERTFILE"],
+        ssl_keyfile=None if "SSL_KEYFILE" not in config else config["SSL_KEYFILE"],
+    )
