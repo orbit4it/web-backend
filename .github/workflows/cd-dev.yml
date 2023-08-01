@@ -25,6 +25,7 @@ jobs:
             source venv/bin/activate
             pip install -r requirements.txt
             echo "${{ secrets.ENV_FILE_DEV }}" > .env
+            echo "${{ secrets.LOGGER_DEV }}" > log.ini
             python3 script.py drop-all
             python3 script.py seed
             export PATH=$PATH:${{ secrets.NODE_PATH_DEV }}/bin

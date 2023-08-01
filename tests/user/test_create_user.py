@@ -21,13 +21,18 @@ data = [
                 registration_token="token",
                 expired_at=datetime.now() + timedelta(days=7),
                 division_id=1,
-                grade_id=1
+                grade_id=1,
+                division=Division(
+                    name="Game Development",
+                    wa_group_link="https://whatsapp.com"
+                ),
             )
         ]
     )
 ]
 
-
+@pytest.mark.slow
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "mock,input,expected",
     [
@@ -40,7 +45,7 @@ data = [
             {
                 "data": {
                     "createUser": {
-                        "message": "Registrasi berhasil, kamu bisa login sekarang!"
+                        "message": "Registrasi berhasil, kamu bisa login sekarang dan jangan lupa cek email!"
                     }
                 },
                 "count": 1,
@@ -84,12 +89,13 @@ data = [
     ],
     indirect=["mock"]
 )
-def test_create_user(mock: Mock, input, expected):
+async def test_create_user(mock: Mock, input, expected):
     query = """
         mutation TestCreateUser($token: String!, $password: String!) {
           createUser(
             registrationToken: $token,
-            password: $password
+            password: $password,
+            gradeId: 1
           ) {
             ... on Success {
               message
@@ -101,9 +107,12 @@ def test_create_user(mock: Mock, input, expected):
         }
     """
 
-    result = mock.schema.execute_sync(
+    result = await mock.schema.execute(
         query,
-        context_value={"request": Request()},
+        context_value={
+            "request": Request(),
+            "skip_email": True
+        },
         variable_values={
             "token": input["token"],
             "password": input["password"]

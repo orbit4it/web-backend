@@ -68,7 +68,7 @@ def test_create_user_pending(mock: Mock, input, expected):
             name: "John Doe",
             email: $email,
             motivation: "This is my motivation!",
-            nis: "12345678",
+            nis: "",
             divisionId: 1,
             gradeId: 1,
           }) {

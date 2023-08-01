@@ -37,14 +37,14 @@ def valid_email(email: str):
 
 def validate_user_pending(user_pending: UserPendingInput):
     try:
-        not_empty("NIS", user_pending.nis)
         not_empty("Nama", user_pending.name)
         not_empty("Email", user_pending.email)
         not_empty("Motivasi", user_pending.motivation)
 
-        max_len("NIS", user_pending.nis, 12)
         max_len("Nama", user_pending.name, 255)
         max_len("Email", user_pending.email, 255)
+        if user_pending.nis:
+            max_len("NIS", user_pending.nis, 10)
 
         valid_email(user_pending.email)
 

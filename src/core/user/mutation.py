@@ -32,18 +32,23 @@ class Mutation:
             return Error(str(e))
 
         user_pending_db = model.UserPending(**vars(user_pending))
-        db.add(user_pending_db)
-        db.commit()
 
-        return Success("Akun sedang diverifikasi, mohon tunggu email verifikasi")
+        try:
+            db.add(user_pending_db)
+            db.commit()
+
+            return Success("Akun sedang diverifikasi, mohon tunggu email verifikasi")
+        except:
+            db.rollback()
+            return Error("Terjadi kesalahan")
 
 
     @strawberry.mutation(
         permission_classes=[NotAuth],
         description="(NotAuth) After user gets the registration token from email, user can re-register to create account"
     )
-    def create_user(
-        self, info: Info, registration_token: str, password: str
+    async def create_user(
+        self, info: Info, registration_token: str, password: str, grade_id: int
     ) -> Success | Error:
         db: Session = info.context["db"]
 
@@ -64,16 +69,24 @@ class Mutation:
             password=bcrypt.hash(password),
             nis=user_pending.nis,
             division_id=user_pending.division_id,
-            grade_id=user_pending.grade_id,
+            grade_id=grade_id,
             refresh_token=token.generate(64)
         )
+
+        division = user_pending.division
 
         try:
             user_pending_query.delete()
             db.add(user)
             db.commit()
 
-            return Success("Registrasi berhasil, kamu bisa login sekarang!")
+            asyncio.create_task(email.send_group_link(
+                receiver=user.email,
+                division_link=division.wa_group_link,
+                division_name=division.name,
+            ))
+
+            return Success("Registrasi berhasil, kamu bisa login sekarang dan jangan lupa cek email!")
 
         except IntegrityError as e:
             db.rollback()
@@ -107,7 +120,7 @@ class Mutation:
         }) # type: ignore
         db.commit()
 
-        asyncio.create_task(email.send(
+        asyncio.create_task(email.send_verification(
             user_pending.email, # type: ignore
             user_pending.division.name,
             registration_token
