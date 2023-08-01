@@ -15,10 +15,15 @@ from sqlalchemy.orm import relationship
 from db.database import Base
 
 
+# TODO
+# 1. Tambah field title
+
+
 class Schedule(Base):
     __tablename__ = "schedules"
 
     id = Column(String(36), primary_key=True, default=uuid.uuid4)
+    title = Column(Text, nullable=True)
     note = Column(Text)
     date = Column(DateTime, default=func.now())
     location = Column(Text, nullable=False)
@@ -27,5 +32,8 @@ class Schedule(Base):
 
     division_id = Column(Integer, ForeignKey("divisions.id"))
     division = relationship("Division", back_populates="schedules")
+
+    subject_id = Column(String(36), ForeignKey("subjects.id"))
+    subject = relationship("Subject", back_populates="schedules")
 
     attendances = relationship("Attendance", back_populates="schedule")

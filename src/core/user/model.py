@@ -7,7 +7,6 @@ from db.database import Base
 from . import type
 
 
-
 class User(Base):
     __tablename__ = "users"
 
@@ -31,6 +30,8 @@ class User(Base):
     grade = relationship("Grade", back_populates="students")
 
     attendances = relationship("Attendance", back_populates="user")
+
+    subjects = relationship("Subject", back_populates="author")
 
 
 class UserPending(Base):

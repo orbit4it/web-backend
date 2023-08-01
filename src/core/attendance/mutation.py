@@ -1,9 +1,10 @@
+from sqlalchemy import and_
 import strawberry
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from strawberry.types import Info
 
-from permissions.auth import UserAuth
+from permissions.auth import AdminAuth, UserAuth
 from helpers.types import Error, Success
 
 from ..schedule.model import Schedule as ScheduleModel
@@ -12,6 +13,26 @@ from . import model, type
 
 @strawberry.type
 class Mutation:
+    @strawberry.mutation(
+        permission_classes=[AdminAuth], description="(admin) hapus data kehadiran"
+    )
+    def del_attendance_by_id(self, info: Info, id: str) -> Success | Error:
+        db: Session = info.context["db"]
+
+        try:
+            query = db.query(model.Attendance).filter(model.Attendance.id == id)
+            count = query.count()
+            query.delete()
+
+            db.commit()
+
+            return Success(f"{count} kehadiran berhasil dihapus")
+        except IntegrityError as e:
+            print(e)
+
+            db.rollback()
+            return Error("Terjadi kesalahan")
+
     @strawberry.mutation(
         permission_classes=[UserAuth], description="Isi kehadiran user"
     )
@@ -23,7 +44,10 @@ class Mutation:
 
         try:
             query = db.query(ScheduleModel).filter(
-                ScheduleModel.id == attendance.schedule_id
+                and_(
+                    ScheduleModel.date == attendance.date,
+                    ScheduleModel.division_id == attendance.division_id,
+                )
             )
             schedule = query.first()
 
@@ -47,7 +71,15 @@ class Mutation:
                     f"Kehadiran sudah diisi dengan status {attendance_exist.status.upper()}"
                 )
 
-            new_attendance = model.Attendance(user_id=user_id, **vars(attendance))
+            new_attendance = model.Attendance(
+                user_id=user_id,
+                status=attendance.status,
+                rating=attendance.rating,
+                feedback=attendance.feedback,
+                suggestion=attendance.suggestion,
+                reason=attendance.reason,
+                schedule_id=schedule.id,
+            )
 
             db.add(new_attendance)
             db.commit()
