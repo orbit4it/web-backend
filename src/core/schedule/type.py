@@ -22,13 +22,13 @@ class ScheduleByDateType:
 
 @strawberry.type
 class ScheduleType:
-    id: str
+    id: str | None
     title: str | None
-    note: str
-    date: str
-    location: str
-    token: str
-    attendance_is_open: bool
+    note: str | None
+    date: str | None
+    location: str | None
+    token: str | None
+    attendance_is_open: bool | None
 
     # relation
     subject: Annotated["SubjectType", strawberry.lazy("core.subject.type")] | None

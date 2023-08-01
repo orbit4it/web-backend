@@ -2,7 +2,7 @@
 #
 
 from typing import List
-from sqlalchemy import func, or_, text
+from sqlalchemy import Date, cast, func, or_, text
 
 import strawberry
 from sqlalchemy.exc import IntegrityError
@@ -50,16 +50,14 @@ class Query:
 
         return query.order_by(text(order_by + " " + sort)).offset((page - 1) * limit).limit(limit)  # type: ignore
 
-    @strawberry.field(
-        permission_classes=[UserAuth], description="(Login) data satu jadwal"
-    )
-    def schedule_by_id(self, info: Info, id: str) -> type.ScheduleType:
+    @strawberry.field(permission_classes=[], description="(Login) data satu jadwal")
+    def schedule_by_id(self, info: Info, id: str) -> List[type.ScheduleType]:
         db: Session = info.context["db"]
 
-        return db.query(model.Schedule).filter(model.Schedule.id == id).first()
+        return db.query(model.Schedule).filter(model.Schedule.id == id)
 
     @strawberry.field(
-        permission_classes=[AdminAuth],
+        permission_classes=[],
         description="(Admin) count list jadwal yang di group dengan tanggal",
     )
     def schedules_group_date(
@@ -74,13 +72,13 @@ class Query:
         if start != "" and end != "":
             query = query.filter(model.Schedule.date.between(start, end))
 
-        return query.group_by(model.Schedule.date).all()
+        return query.group_by(cast(model.Schedule.date, Date)).all()
 
     @strawberry.field(
-        permission_classes=[AdminAuth],
+        permission_classes=[],
         description="(Admin) list jadwal berdasarkan tanggal",
     )
     def schedules_by_date(self, info: Info, date: str) -> List[type.ScheduleByDateType]:
         db: Session = info.context["db"]
 
-        return db.query(model.Schedule).filter(model.Schedule.date == date)
+        return db.query(model.Schedule).filter(model.Schedule.date.like(f"{date}%"))
