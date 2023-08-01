@@ -9,8 +9,12 @@ from strawberry.types import Info
 
 from helpers import email, token
 from helpers.types import Error, Success
-from permissions import AdminAuth, NotAuth, SuperAdminAuth
-from helpers.validation import ValidationError, validate_user_pending
+from permissions import AdminAuth, NotAuth, SuperAdminAuth, UserAuth
+from helpers.validation import (
+    ValidationError,
+    validate_edit_user,
+    validate_user_pending
+)
 from . import model, type
 
 
@@ -277,3 +281,40 @@ class Mutation:
         return Success('Berhasil menurunkan superadmin')
 
 
+    @strawberry.mutation(
+        permission_classes=[UserAuth],
+        description="(User) Update user profile"
+    )
+    def edit_user_profile(
+            self, info: Info, user: type.EditUserInput
+    ) -> Success | Error:
+        db: Session = info.context["db"]
+        user_id = info.context["payload"]["sub"]
+
+        try:
+            validate_edit_user(user)
+        except ValidationError as e:
+            return Error(str(e))
+
+        query = db.query(model.User).filter(model.User.id == user_id)
+        if query.count() == 0:
+            return Error("User tidak ditemukan")
+
+        try:
+            query.update({
+                model.User.bio: user.bio,
+                model.User.phone_number: user.phone_number,
+                model.User.nis: user.nis,
+                model.User.website: user.website,
+                model.User.facebook: user.facebook,
+                model.User.instagram: user.instagram,
+                model.User.linkedin: user.linkedin,
+                model.User.twitter: user.twitter,
+                model.User.github: user.github,
+            }) # type: ignore
+            db.commit()
+            return Success("Profile berhasil diubah")
+
+        except Exception as e:
+            db.rollback()
+            return Error("Terjadi kesalahan")

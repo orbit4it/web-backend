@@ -18,13 +18,37 @@ class Role(enum.Enum):
 
 
 @strawberry.type
-class Users:
+class User:
     id: str
     name: str
+    email: str
+    score: int
     role: Role
+    profile_picture: str | None
+    phone_number: str | None
+    bio: str | None
+    nis: str | None
+    website: str | None
+    facebook: str | None
+    instagram: str | None
+    linkedin: str | None
+    twitter: str | None
     division: Annotated["DivisionType", strawberry.lazy("core.division.type")]
     grade: Annotated["GradeType", strawberry.lazy("core.grade.type")]
     created_at: str
+
+
+@strawberry.input
+class EditUserInput:
+    bio: str
+    phone_number: str
+    nis: str
+    website: str
+    facebook: str
+    instagram: str
+    linkedin: str
+    twitter: str
+    github: str
 
 
 @strawberry.input

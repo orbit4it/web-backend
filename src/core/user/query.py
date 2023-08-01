@@ -96,7 +96,7 @@ class Query:
         sort: str = "asc",
         start_at: str = "",
         end_at: str = "",
-    ) -> list[type.Users]:
+    ) -> list[type.User]:
         db: Session = info.context["db"]
 
         query = (
@@ -119,13 +119,13 @@ class Query:
             query.order_by(text(order_by + " " + sort))
             .offset((page - 1) * limit)
             .limit(limit)
-        )
+        ) # type: ignore
 
     # get all admin
     @strawberry.field(
         permission_classes=[SuperAdminAuth], description="(SuperAdmin) Get all admin"
     )
-    def users_admin(self, info: Info) -> list[type.Users]:
+    def users_admin(self, info: Info) -> list[type.User]:
         db = info.context["db"]
         users = db.query(model.User).filter(model.User.role == "admin").all()
         return users
@@ -134,7 +134,7 @@ class Query:
         permission_classes=[SuperAdminAuth],
         description="(SuperAdmin) Get all superadmin",
     )
-    def super_admin(self, info: Info) -> list[type.Users]:
+    def super_admin(self, info: Info) -> list[type.User]:
         db = info.context["db"]
         users = db.query(model.User).filter(model.User.role == "superadmin").all()
         return users
@@ -144,7 +144,7 @@ class Query:
         permission_classes=[SuperAdminAuth],
         description="(SuperAdmin) get all user, admin, and superadmin",
     )
-    def users_no_restrict(self, info: Info) -> list[type.Users]:
+    def users_no_restrict(self, info: Info) -> list[type.User]:
         db = info.context["db"]
         users = db.query(model.User).all()
         return users
@@ -153,7 +153,7 @@ class Query:
     @strawberry.field(
         permission_classes=[UserAuth], description="(Auth) Get all user via role in jwt"
     )
-    def users_jwt(self, info: Info) -> list[type.Users]:
+    def users_jwt(self, info: Info) -> list[type.User]:
         db = info.context["db"]
         payload = info.context["payload"]
         role = payload["role"]
@@ -170,7 +170,7 @@ class Query:
     @strawberry.field(
         permission_classes=[UserAuth], description="(NotAuth) Get user by id"
     )
-    def user_by_id(self, info: Info, id: str) -> type.Users:
+    def user_by_id(self, info: Info, id: str) -> type.User:
         db = info.context["db"]
         user = db.query(model.User).filter(model.User.id == id).first()
         if user is None:
@@ -180,7 +180,7 @@ class Query:
     @strawberry.field(
         permission_classes=[UserAuth], description="(Auth) Get user by auth jwt"
     )
-    def me(self, info: Info) -> type.Users:
+    def me(self, info: Info) -> type.User:
         db = info.context["db"]
         payload = info.context["payload"]
         user = payload["sub"]
@@ -199,7 +199,7 @@ class Query:
         search: str = "",
         limit: int = 20,
         page: int = 1,
-        order_by: str = "created_at",
+        order_by: str = "id",
         sort: str = "asc",
     ) -> list[type.UserPending]:
         db: Session = info.context["db"]
@@ -215,4 +215,8 @@ class Query:
             else db.query(model.UserPending)
         )
 
-        return db.query(model.UserPending).all()
+        return (
+            query.order_by(text(order_by + " " + sort))
+            .offset((page - 1) * limit)
+            .limit(limit)
+        ) # type: ignore
