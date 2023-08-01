@@ -44,8 +44,8 @@ class UserPending:
     email: str
     motivation: str
     nis: str | None
-    registration_token: str
-    expired_at: datetime
+    registration_token: str | None
+    expired_at: datetime | None
     division_id: int
     grade_id: int
     division: Annotated["DivisionType", strawberry.lazy("core.division.type")]
