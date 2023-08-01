@@ -24,6 +24,7 @@ class Users:
     role: Role
     division: Annotated["DivisionType", strawberry.lazy("core.division.type")]
     grade: Annotated["GradeType", strawberry.lazy("core.grade.type")]
+    created_at: str
 
 
 @strawberry.input
