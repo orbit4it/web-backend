@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from strawberry.types import Info
 
-from helpers import email, token
+from helpers import email, token, avatar
 from helpers.types import Error, Success
 from permissions import AdminAuth, NotAuth, SuperAdminAuth, UserAuth
 from helpers.validation import (
@@ -283,7 +283,7 @@ class Mutation:
 
     @strawberry.mutation(
         permission_classes=[UserAuth],
-        description="(User) Update user profile"
+        description="(User) Edit user profile"
     )
     def edit_user_profile(
             self, info: Info, user: type.EditUserInput
@@ -317,5 +317,33 @@ class Mutation:
             return Success("Profile berhasil diubah")
 
         except Exception as e:
+            db.rollback()
+            return Error("Terjadi kesalahan")
+
+
+    @strawberry.mutation(
+        permission_classes=[UserAuth],
+        description="(User) Update user avatar",
+    )
+    def update_user_avatar(
+        self, info: Info, avatar_id: int
+    ) -> Success | Error:
+        db: Session = info.context["db"]
+        user_id = info.context["payload"]["sub"]
+
+        if avatar_id < 1 or avatar_id > 20:
+            return Error("Avatar yang dipilih tidak ditemukan")
+
+        query = db.query(model.User).filter(model.User.id == user_id)
+        if query.count() == 0:
+            return Error("User tidak ditemukan")
+
+        try:
+            query.update({
+                model.User.profile_picture: avatar.url(avatar_id)
+            }) # type: ignore
+            db.commit()
+            return Success("Foto profil berhasil diubah")
+        except:
             db.rollback()
             return Error("Terjadi kesalahan")

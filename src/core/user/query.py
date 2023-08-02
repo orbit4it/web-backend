@@ -1,10 +1,10 @@
-from sqlalchemy import or_, text
 import strawberry
+from sqlalchemy import or_, text
 from passlib.hash import bcrypt
 from sqlalchemy.orm import Session
 from strawberry.types import Info
 
-from helpers import jwt
+from helpers import jwt, avatar
 from helpers.types import Error, Success
 from permissions import NotAuth, SuperAdminAuth, UserAuth
 
@@ -220,3 +220,8 @@ class Query:
             .offset((page - 1) * limit)
             .limit(limit)
         ) # type: ignore
+
+
+    @strawberry.field(description="Get all avatar url")
+    def user_avatars(self) -> list[str]:
+        return avatar.all()
