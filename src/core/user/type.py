@@ -2,7 +2,9 @@ import strawberry
 import enum
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, List
+
+from helpers.types import Paginate
 
 
 if TYPE_CHECKING:
@@ -18,13 +20,25 @@ class Role(enum.Enum):
 
 
 @strawberry.type
-class Users:
+class User:
     id: str
     name: str
+    email: str
+    profile_picture: str | None
     role: Role
+    nis: str | None
+    score: str | None
+    bio: str | None
+    phone_number: str | None
+    created_at: str
+
     division: Annotated["DivisionType", strawberry.lazy("core.division.type")]
     grade: Annotated["GradeType", strawberry.lazy("core.grade.type")]
-    created_at: str
+
+
+@strawberry.type
+class Users(Paginate):
+    users: List[User]
 
 
 @strawberry.input

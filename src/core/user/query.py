@@ -1,3 +1,5 @@
+import math
+from typing import List
 from sqlalchemy import or_, text
 import strawberry
 from passlib.hash import bcrypt
@@ -96,7 +98,7 @@ class Query:
         sort: str = "asc",
         start_at: str = "",
         end_at: str = "",
-    ) -> list[type.Users]:
+    ) -> type.Users:
         db: Session = info.context["db"]
 
         query = (
@@ -115,17 +117,26 @@ class Query:
         if start_at != "" and end_at != "":
             query = query.filter(model.User.created_at.between(start_at, end_at))
 
-        return (
-            query.order_by(text(order_by + " " + sort))
+        count = query.count()
+        total_pages = math.ceil(count / limit)
+
+        return type.Users(
+            total_data=count,
+            total_pages=total_pages,
+            page=page,
+            limit=limit,
+            has_next_page=page < total_pages,
+            has_prev_page=page > 1,
+            users=query.order_by(text(order_by + " " + sort))
             .offset((page - 1) * limit)
-            .limit(limit)
+            .limit(limit),
         )
 
     # get all admin
     @strawberry.field(
         permission_classes=[SuperAdminAuth], description="(SuperAdmin) Get all admin"
     )
-    def users_admin(self, info: Info) -> list[type.Users]:
+    def users_admin(self, info: Info) -> List[type.User]:
         db = info.context["db"]
         users = db.query(model.User).filter(model.User.role == "admin").all()
         return users
@@ -134,7 +145,7 @@ class Query:
         permission_classes=[SuperAdminAuth],
         description="(SuperAdmin) Get all superadmin",
     )
-    def super_admin(self, info: Info) -> list[type.Users]:
+    def super_admin(self, info: Info) -> List[type.User]:
         db = info.context["db"]
         users = db.query(model.User).filter(model.User.role == "superadmin").all()
         return users
@@ -144,7 +155,7 @@ class Query:
         permission_classes=[SuperAdminAuth],
         description="(SuperAdmin) get all user, admin, and superadmin",
     )
-    def users_no_restrict(self, info: Info) -> list[type.Users]:
+    def users_no_restrict(self, info: Info) -> List[type.User]:
         db = info.context["db"]
         users = db.query(model.User).all()
         return users
@@ -153,7 +164,7 @@ class Query:
     @strawberry.field(
         permission_classes=[UserAuth], description="(Auth) Get all user via role in jwt"
     )
-    def users_jwt(self, info: Info) -> list[type.Users]:
+    def users_jwt(self, info: Info) -> List[type.User]:
         db = info.context["db"]
         payload = info.context["payload"]
         role = payload["role"]
@@ -170,7 +181,7 @@ class Query:
     @strawberry.field(
         permission_classes=[UserAuth], description="(NotAuth) Get user by id"
     )
-    def user_by_id(self, info: Info, id: str) -> type.Users:
+    def user_by_id(self, info: Info, id: str) -> type.User:  # INI BANG
         db = info.context["db"]
         user = db.query(model.User).filter(model.User.id == id).first()
         if user is None:
@@ -180,7 +191,7 @@ class Query:
     @strawberry.field(
         permission_classes=[UserAuth], description="(Auth) Get user by auth jwt"
     )
-    def me(self, info: Info) -> type.Users:
+    def me(self, info: Info) -> type.User:  # INI BANG
         db = info.context["db"]
         payload = info.context["payload"]
         user = payload["sub"]
@@ -201,7 +212,7 @@ class Query:
         page: int = 1,
         order_by: str = "created_at",
         sort: str = "asc",
-    ) -> list[type.UserPending]:
+    ) -> type.Users:
         db: Session = info.context["db"]
 
         query = (
@@ -215,4 +226,17 @@ class Query:
             else db.query(model.UserPending)
         )
 
-        return db.query(model.UserPending).all()
+        count = query.count()
+        total_pages = math.ceil(count / limit)
+
+        return type.Users(
+            total_data=count,
+            total_pages=total_pages,
+            page=page,
+            limit=limit,
+            has_next_page=page < total_pages,
+            has_prev_page=page > 1,
+            users=query.order_by(text(order_by + " " + sort))
+            .offset((page - 1) * limit)
+            .limit(limit),
+        )
