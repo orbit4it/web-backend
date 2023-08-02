@@ -1,9 +1,9 @@
 import math
 from typing import List
-from sqlalchemy import or_, text
+from sqlalchemy import func, or_, text
 import strawberry
 from passlib.hash import bcrypt
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 from strawberry.types import Info
 
 from helpers import jwt
@@ -11,6 +11,10 @@ from helpers.types import Error, Success
 from permissions import NotAuth, SuperAdminAuth, UserAuth
 
 from . import model, type
+from core.attendance.model import Attendance as AttendanceModel
+from core.schedule.model import Schedule as ScheduleModel
+from core.division.model import Division as DivisionModel
+from core.grade.model import Grade as GradeModel
 
 
 @strawberry.type
@@ -86,7 +90,7 @@ class Query:
 
     # normal user get users
     @strawberry.field(
-        permission_classes=[UserAuth], description="(Auth) Get all user and admin"
+        permission_classes=[], description="(Auth) Get all user and admin"
     )
     def users(
         self,
@@ -97,20 +101,49 @@ class Query:
         order_by: str = "created_at",
         sort: str = "asc",
         start_at: str = "",
+        division_id: int = 0,
+        grade_id: int = 0,
         end_at: str = "",
     ) -> type.Users:
         db: Session = info.context["db"]
 
+        AttendanceAlias = aliased(AttendanceModel)
+        ScheduleAlias = aliased(ScheduleModel)
+
         query = (
-            db.query(model.User).filter(
+            db.query(
+                model.User,
+                DivisionModel,
+                GradeModel,
+                (
+                    (
+                        db.query(func.count(AttendanceAlias.id))
+                        .join(ScheduleAlias, AttendanceAlias.schedule)
+                        .filter(AttendanceAlias.user_id == model.User.id)
+                        .filter(ScheduleAlias.division_id == ScheduleAlias.division_id)
+                    ).scalar_subquery()
+                    / func.count(ScheduleAlias.id)
+                    * 100
+                ).label("attendance_percentage"),
+            )
+            .join(DivisionModel, DivisionModel.id == model.User.division_id)
+            .join(GradeModel, GradeModel.id == model.User.grade_id)
+            .group_by(model.User.id)
+        )
+
+        if search != "":
+            query = query.filter(
                 or_(
                     model.User.name.like(f"%{search}%"),
                     model.User.email.like(f"{search}%"),
                 )
             )
-            if search != ""
-            else db.query(model.User)
-        )
+
+        if division_id:
+            query = query.filter(model.User.division_id == division_id)
+
+        if grade_id:
+            query = query.filter(model.User.grade_id == grade_id)
 
         query = query.filter(model.User.role != "superadmin")
 
@@ -120,6 +153,32 @@ class Query:
         count = query.count()
         total_pages = math.ceil(count / limit)
 
+        query = (
+            query.order_by(text(order_by + " " + sort))
+            .offset((page - 1) * limit)
+            .limit(limit)
+        )
+
+        results = []
+        for user, division, grade, attendance_percentage in query.all():
+            results.append(
+                type.User(
+                    id=user.id,
+                    name=user.name,
+                    email=user.email,
+                    profile_picture=user.profile_picture,
+                    role=user.role,
+                    nis=user.nis,
+                    score=user.score,
+                    bio=user.bio,
+                    phone_number=user.phone_number,
+                    created_at=user.created_at,
+                    attendance_percentage=attendance_percentage,
+                    division=division,
+                    grade=grade,
+                )
+            )
+
         return type.Users(
             total_data=count,
             total_pages=total_pages,
@@ -127,9 +186,7 @@ class Query:
             limit=limit,
             has_next_page=page < total_pages,
             has_prev_page=page > 1,
-            users=query.order_by(text(order_by + " " + sort))
-            .offset((page - 1) * limit)
-            .limit(limit),
+            users=results,
         )
 
     # get all admin
