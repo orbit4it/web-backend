@@ -1,10 +1,9 @@
 from fastapi.testclient import TestClient
 
 from src.config import config
-from src.main import app
-from tests.setup import Mock, mock # pyright: ignore
+from tests.setup import Mock, mock, app_test # pyright: ignore
 
-client = TestClient(app)
+client = TestClient(app_test())
 
 
 def test_user_avatars(mock: Mock):

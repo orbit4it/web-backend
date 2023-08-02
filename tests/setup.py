@@ -1,6 +1,8 @@
 import pytest
 import strawberry
 
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from mock_alchemy.mocking import (
     UnifiedAlchemyMagicMock,
     mock as caller # pyright: ignore
@@ -8,6 +10,12 @@ from mock_alchemy.mocking import (
 from strawberry.schema import Schema
 from strawberry.extensions import SchemaExtension
 from schema import Query, Mutation
+
+
+def app_test():
+    app = FastAPI()
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+    return app
 
 
 @pytest.fixture
