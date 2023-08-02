@@ -212,7 +212,7 @@ class Query:
         page: int = 1,
         order_by: str = "created_at",
         sort: str = "asc",
-    ) -> type.Users:
+    ) -> type.UsersPending:
         db: Session = info.context["db"]
 
         query = (

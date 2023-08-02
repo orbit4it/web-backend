@@ -65,6 +65,9 @@ class UserPending:
     division: Annotated["DivisionType", strawberry.lazy("core.division.type")]
     grade: Annotated["GradeType", strawberry.lazy("core.grade.type")]
 
+@strawberry.type
+class UsersPending(Paginate):
+    users_pending: List[UserPending]
 
 @strawberry.type
 class Token:
