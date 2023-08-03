@@ -1,6 +1,7 @@
+import phonenumbers
 from email_validator import validate_email
 
-from core.user.type import UserPendingInput
+from core.user.type import EditUserInput, UserPendingInput
 
 
 class ValidationError(Exception):
@@ -50,3 +51,20 @@ def validate_user_pending(user_pending: UserPendingInput):
 
     except ValidationError as e:
         raise e
+
+
+def validate_edit_user(user: EditUserInput):
+    try:
+        if user.phone_number:
+            phonenumbers.parse(user.phone_number, "ID")
+            max_len("Nomor telepon", user.phone_number, 13)
+
+        if user.nis:
+            max_len("NIS", user.nis, 10)
+
+    except phonenumbers.NumberParseException:
+        raise ValidationError("Nomor telepon")
+    except ValidationError as e:
+        raise e
+    except:
+        raise ValidationError()

@@ -1,8 +1,9 @@
 import uvicorn
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-import db.tables
+import db.tables # pyright: ignore
 from config import config, is_dev
 from schema import graphql_app
 
@@ -15,6 +16,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(graphql_app, prefix="/graphql")
 
@@ -30,6 +33,6 @@ if __name__ == "__main__":
         workers=workers,
         reload=is_dev(),
         log_config="log.ini",
-        ssl_certfile=None if "SSL_CERTFILE" not in config else config["SSL_CERTFILE"],
-        ssl_keyfile=None if "SSL_KEYFILE" not in config else config["SSL_KEYFILE"],
+        ssl_certfile=config.get("SSL_CERTFILE"),
+        ssl_keyfile=config.get("SSL_KEYFILE"),
     )

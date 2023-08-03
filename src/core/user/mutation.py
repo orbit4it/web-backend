@@ -7,10 +7,14 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from strawberry.types import Info
 
-from helpers import email, token
+from helpers import email, token, avatar
 from helpers.types import Error, Success
-from permissions import AdminAuth, NotAuth, SuperAdminAuth
-from helpers.validation import ValidationError, validate_user_pending
+from permissions import AdminAuth, NotAuth, SuperAdminAuth, UserAuth
+from helpers.validation import (
+    ValidationError,
+    validate_edit_user,
+    validate_user_pending
+)
 from . import model, type
 
 
@@ -81,7 +85,7 @@ class Mutation:
             db.commit()
 
             asyncio.create_task(email.send_group_link(
-                receiver=user.email,
+                receiver=user.email, # type: ignore
                 division_link=division.wa_group_link,
                 division_name=division.name,
             ))
@@ -189,7 +193,7 @@ class Mutation:
             if query is None:
                 return Error(f"Tidak ada user dengan Id:  {id}")
 
-            query.role = 'admin'
+            query.role = 'admin' # type: ignore
             db.commit()
 
         except IntegrityError as e:
@@ -214,7 +218,7 @@ class Mutation:
             if query is None:
                 return Error(f"Tidak ada user dengan Id: {id}")
 
-            query.role = 'user'
+            query.role = 'user' # type: ignore
             db.commit()
 
         except IntegrityError as e:
@@ -239,7 +243,7 @@ class Mutation:
             if query is None:
                 return Error(f"Tidak ada user dengan Id: {id}")
 
-            query.role = 'superadmin'
+            query.role = 'superadmin' # type: ignore
             db.commit()
 
         except IntegrityError as e:
@@ -264,7 +268,7 @@ class Mutation:
             if query is None:
                 return Error(f"Tidak ada user dengan Id: {id}")
 
-            query.role = 'admin'
+            query.role = 'admin' # type: ignore
             db.commit()
 
         except IntegrityError as e:
@@ -277,3 +281,69 @@ class Mutation:
         return Success('Berhasil menurunkan superadmin')
 
 
+    @strawberry.mutation(
+        permission_classes=[UserAuth],
+        description="(User) Edit user profile"
+    )
+    def edit_user_profile(
+            self, info: Info, user: type.EditUserInput
+    ) -> Success | Error:
+        db: Session = info.context["db"]
+        user_id = info.context["payload"]["sub"]
+
+        try:
+            validate_edit_user(user)
+        except ValidationError as e:
+            return Error(str(e))
+
+        query = db.query(model.User).filter(model.User.id == user_id)
+
+        if query.count() == 0:
+            return Error("User tidak ditemukan")
+
+        try:
+            query.update({
+                model.User.bio: user.bio,
+                model.User.phone_number: user.phone_number,
+                model.User.nis: user.nis,
+                model.User.website: user.website,
+                model.User.facebook: user.facebook,
+                model.User.instagram: user.instagram,
+                model.User.linkedin: user.linkedin,
+                model.User.twitter: user.twitter,
+                model.User.github: user.github,
+            }) # type: ignore
+            db.commit()
+            return Success("Profile berhasil diubah")
+
+        except Exception as e:
+            db.rollback()
+            return Error("Terjadi kesalahan")
+
+
+    @strawberry.mutation(
+        permission_classes=[UserAuth],
+        description="(User) Update user avatar",
+    )
+    def update_user_avatar(
+        self, info: Info, avatar_id: int
+    ) -> Success | Error:
+        db: Session = info.context["db"]
+        user_id = info.context["payload"]["sub"]
+
+        if avatar_id < 1 or avatar_id > 20:
+            return Error("Avatar yang dipilih tidak ditemukan")
+
+        query = db.query(model.User).filter(model.User.id == user_id)
+        if query.count() == 0:
+            return Error("User tidak ditemukan")
+
+        try:
+            query.update({
+                model.User.profile_picture: avatar.url(avatar_id)
+            }) # type: ignore
+            db.commit()
+            return Success("Foto profil berhasil diubah")
+        except:
+            db.rollback()
+            return Error("Terjadi kesalahan")

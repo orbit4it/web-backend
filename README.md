@@ -5,7 +5,7 @@ GraphQL backend for Orbit website.
 ## Getting started
 
 1. Clone this repository
-2. Create `.env` file ([see example](https://github.com/orbit4it/web-backend/blob/main/.env.example))
+2. Create `.env` file ([see example](https://github.com/orbit4it/web-backend/blob/dev/.env.example))
 3. Install dependencies
 
 ```

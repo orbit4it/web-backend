@@ -5,7 +5,7 @@ import strawberry
 
 if TYPE_CHECKING:
     from core.schedule.type import ScheduleType
-    from core.user.type import Users
+    from core.user.type import User
 
 
 @strawberry.enum
@@ -25,7 +25,7 @@ class AttendanceType:
     created_at: str
 
     schedule: Annotated["ScheduleType", strawberry.lazy("core.schedule.type")]
-    user: Annotated["Users", strawberry.lazy("core.user.type")]
+    user: Annotated["User", strawberry.lazy("core.user.type")]
 
 
 @strawberry.type

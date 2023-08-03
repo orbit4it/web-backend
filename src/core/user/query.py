@@ -1,20 +1,19 @@
 import math
-from typing import List
-from sqlalchemy import func, or_, text
 import strawberry
 from passlib.hash import bcrypt
-from sqlalchemy.orm import Session, aliased
 from strawberry.types import Info
+from sqlalchemy import func, or_, text
+from sqlalchemy.orm import Session, aliased
 
-from helpers import jwt
+from helpers import jwt, avatar
 from helpers.types import Error, Success
 from permissions import NotAuth, SuperAdminAuth, UserAuth
 
-from . import model, type
 from core.attendance.model import Attendance as AttendanceModel
 from core.schedule.model import Schedule as ScheduleModel
 from core.division.model import Division as DivisionModel
 from core.grade.model import Grade as GradeModel
+from . import model, type
 
 
 @strawberry.type
@@ -90,7 +89,7 @@ class Query:
 
     # normal user get users
     @strawberry.field(
-        permission_classes=[], description="(Auth) Get all user and admin"
+        permission_classes=[UserAuth], description="(Auth) Get all user and admin"
     )
     def users(
         self,
@@ -145,8 +144,6 @@ class Query:
         if grade_id:
             query = query.filter(model.User.grade_id == grade_id)
 
-        query = query.filter(model.User.role != "superadmin")
-
         if start_at != "" and end_at != "":
             query = query.filter(model.User.created_at.between(start_at, end_at))
 
@@ -157,7 +154,7 @@ class Query:
             query.order_by(text(order_by + " " + sort))
             .offset((page - 1) * limit)
             .limit(limit)
-        )
+        ) # type: ignore
 
         results = []
         for user, division, grade, attendance_percentage in query.all():
@@ -172,6 +169,11 @@ class Query:
                     score=user.score,
                     bio=user.bio,
                     phone_number=user.phone_number,
+                    website=user.website,
+                    facebook=user.website,
+                    instagram=user.instagram,
+                    linkedin=user.linkedin,
+                    twitter=user.twitter,
                     created_at=user.created_at,
                     attendance_percentage=attendance_percentage,
                     division=division,
@@ -193,7 +195,7 @@ class Query:
     @strawberry.field(
         permission_classes=[SuperAdminAuth], description="(SuperAdmin) Get all admin"
     )
-    def users_admin(self, info: Info) -> List[type.User]:
+    def users_admin(self, info: Info) -> list[type.User]:
         db = info.context["db"]
         users = db.query(model.User).filter(model.User.role == "admin").all()
         return users
@@ -202,7 +204,7 @@ class Query:
         permission_classes=[SuperAdminAuth],
         description="(SuperAdmin) Get all superadmin",
     )
-    def super_admin(self, info: Info) -> List[type.User]:
+    def super_admin(self, info: Info) -> list[type.User]:
         db = info.context["db"]
         users = db.query(model.User).filter(model.User.role == "superadmin").all()
         return users
@@ -212,7 +214,7 @@ class Query:
         permission_classes=[SuperAdminAuth],
         description="(SuperAdmin) get all user, admin, and superadmin",
     )
-    def users_no_restrict(self, info: Info) -> List[type.User]:
+    def users_no_restrict(self, info: Info) -> list[type.User]:
         db = info.context["db"]
         users = db.query(model.User).all()
         return users
@@ -221,40 +223,34 @@ class Query:
     @strawberry.field(
         permission_classes=[UserAuth], description="(Auth) Get all user via role in jwt"
     )
-    def users_jwt(self, info: Info) -> List[type.User]:
+    def users_jwt(self, info: Info) -> list[type.User]:
         db = info.context["db"]
         payload = info.context["payload"]
         role = payload["role"]
-        if role == "admin" or role == "user":
-            res = db.query(model.User).filter(model.User.role != "superadmin").all()
-            return res
-        elif role == "superadmin":
+        if role == "superadmin":
             res = db.query(model.User).all()
             return res
         else:
-            return Error("Kok bisa kesini re ?")
+            res = db.query(model.User).filter(model.User.role != "superadmin").all()
+            return res
 
     # get by user id
     @strawberry.field(
         permission_classes=[UserAuth], description="(NotAuth) Get user by id"
     )
-    def user_by_id(self, info: Info, id: str) -> type.User:  # INI BANG
+    def user_by_id(self, info: Info, id: str) -> type.User:
         db = info.context["db"]
         user = db.query(model.User).filter(model.User.id == id).first()
-        if user is None:
-            return Error("User tidak ditemukan")
         return user
 
     @strawberry.field(
         permission_classes=[UserAuth], description="(Auth) Get user by auth jwt"
     )
-    def me(self, info: Info) -> type.User:  # INI BANG
+    def me(self, info: Info) -> type.User:
         db = info.context["db"]
         payload = info.context["payload"]
         user = payload["sub"]
         result = db.query(model.User).filter(model.User.id == user).first()
-        if result is None:
-            return Error("User tidak ditemukan")
         return result
 
     @strawberry.field(
@@ -267,7 +263,7 @@ class Query:
         search: str = "",
         limit: int = 20,
         page: int = 1,
-        order_by: str = "created_at",
+        order_by: str = "id",
         sort: str = "asc",
     ) -> type.UsersPending:
         db: Session = info.context["db"]
@@ -295,5 +291,10 @@ class Query:
             has_prev_page=page > 1,
             users_pending=query.order_by(text(order_by + " " + sort))
             .offset((page - 1) * limit)
-            .limit(limit),
+            .limit(limit), # type: ignore
         )
+
+
+    @strawberry.field(description="Get all avatar url")
+    def user_avatars(self) -> list[str]:
+        return avatar.all()

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Annotated, List, Optional
 
 
 if TYPE_CHECKING:
-    from core.user.type import Users
+    from core.user.type import User
     from core.schedule.type import ScheduleType
 #     from core.quiz.type import QuizType
 
@@ -16,7 +16,7 @@ class SubjectType:
     media: str | None
     description: str
 
-    author: Annotated["Users", strawberry.lazy("core.user.type")]
+    author: Annotated["User", strawberry.lazy("core.user.type")]
     schedules: List[Annotated["ScheduleType", strawberry.lazy("core.schedule.type")]]
 
 

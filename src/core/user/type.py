@@ -24,12 +24,17 @@ class User:
     id: str
     name: str
     email: str
-    profile_picture: str | None
+    score: int
     role: Role
-    nis: str | None
-    score: str | None
-    bio: str | None
+    profile_picture: str | None
     phone_number: str | None
+    bio: str | None
+    nis: str | None
+    website: str | None
+    facebook: str | None
+    instagram: str | None
+    linkedin: str | None
+    twitter: str | None
     created_at: str
     attendance_percentage: float | None
 
@@ -40,6 +45,19 @@ class User:
 @strawberry.type
 class Users(Paginate):
     users: List[User]
+
+
+@strawberry.input
+class EditUserInput:
+    bio: str
+    phone_number: str
+    nis: str
+    website: str
+    facebook: str
+    instagram: str
+    linkedin: str
+    twitter: str
+    github: str
 
 
 @strawberry.input
