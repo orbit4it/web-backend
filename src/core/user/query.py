@@ -89,7 +89,7 @@ class Query:
 
     # normal user get users
     @strawberry.field(
-        permission_classes=[], description="(Auth) Get all user and admin"
+        permission_classes=[UserAuth], description="(Auth) Get all user and admin"
     )
     def users(
         self,

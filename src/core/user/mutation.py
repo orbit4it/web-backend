@@ -85,7 +85,7 @@ class Mutation:
             db.commit()
 
             asyncio.create_task(email.send_group_link(
-                receiver=user.email,
+                receiver=user.email, # type: ignore
                 division_link=division.wa_group_link,
                 division_name=division.name,
             ))
@@ -193,7 +193,7 @@ class Mutation:
             if query is None:
                 return Error(f"Tidak ada user dengan Id:  {id}")
 
-            query.role = 'admin'
+            query.role = 'admin' # type: ignore
             db.commit()
 
         except IntegrityError as e:
@@ -218,7 +218,7 @@ class Mutation:
             if query is None:
                 return Error(f"Tidak ada user dengan Id: {id}")
 
-            query.role = 'user'
+            query.role = 'user' # type: ignore
             db.commit()
 
         except IntegrityError as e:
@@ -243,7 +243,7 @@ class Mutation:
             if query is None:
                 return Error(f"Tidak ada user dengan Id: {id}")
 
-            query.role = 'superadmin'
+            query.role = 'superadmin' # type: ignore
             db.commit()
 
         except IntegrityError as e:
@@ -268,7 +268,7 @@ class Mutation:
             if query is None:
                 return Error(f"Tidak ada user dengan Id: {id}")
 
-            query.role = 'admin'
+            query.role = 'admin' # type: ignore
             db.commit()
 
         except IntegrityError as e:
