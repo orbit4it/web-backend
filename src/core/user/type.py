@@ -36,15 +36,19 @@ class User:
     linkedin: str | None
     twitter: str | None
     created_at: str
-    attendance_percentage: float | None
 
     division: Annotated["DivisionType", strawberry.lazy("core.division.type")] | None
     grade: Annotated["GradeType", strawberry.lazy("core.grade.type")] | None
 
 
 @strawberry.type
+class UserAttendance(User):
+    attendance_percentage: float | None
+
+
+@strawberry.type
 class Users(Paginate):
-    users: List[User]
+    users: List[UserAttendance]
 
 
 @strawberry.input
