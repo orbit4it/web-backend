@@ -2,7 +2,9 @@ import strawberry
 import enum
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, List
+
+from helpers.types import Paginate
 
 
 if TYPE_CHECKING:
@@ -33,9 +35,16 @@ class User:
     instagram: str | None
     linkedin: str | None
     twitter: str | None
-    division: Annotated["DivisionType", strawberry.lazy("core.division.type")]
-    grade: Annotated["GradeType", strawberry.lazy("core.grade.type")]
     created_at: str
+    attendance_percentage: float | None
+
+    division: Annotated["DivisionType", strawberry.lazy("core.division.type")] | None
+    grade: Annotated["GradeType", strawberry.lazy("core.grade.type")] | None
+
+
+@strawberry.type
+class Users(Paginate):
+    users: List[User]
 
 
 @strawberry.input
@@ -74,6 +83,11 @@ class UserPending:
     grade_id: int
     division: Annotated["DivisionType", strawberry.lazy("core.division.type")]
     grade: Annotated["GradeType", strawberry.lazy("core.grade.type")]
+
+
+@strawberry.type
+class UsersPending(Paginate):
+    users_pending: List[UserPending]
 
 
 @strawberry.type
