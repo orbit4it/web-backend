@@ -159,7 +159,7 @@ class Query:
         results = []
         for user, division, grade, attendance_percentage in query.all():
             results.append(
-                type.User(
+                type.UserWithAttendance(
                     id=user.id,
                     name=user.name,
                     email=user.email,

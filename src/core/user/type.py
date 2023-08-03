@@ -42,13 +42,13 @@ class User:
 
 
 @strawberry.type
-class UserAttendance(User):
+class UserWithAttendance(User):
     attendance_percentage: float | None
 
 
 @strawberry.type
 class Users(Paginate):
-    users: List[UserAttendance]
+    users: List[UserWithAttendance]
 
 
 @strawberry.input
