@@ -286,14 +286,14 @@ class Query:
         count = query.count()
         total_pages = math.ceil(count / limit)
 
-        return type.Users(
+        return type.UsersPending(
             total_data=count,
             total_pages=total_pages,
             page=page,
             limit=limit,
             has_next_page=page < total_pages,
             has_prev_page=page > 1,
-            users=query.order_by(text(order_by + " " + sort))
+            users_pending=query.order_by(text(order_by + " " + sort))
             .offset((page - 1) * limit)
             .limit(limit),
         )
