@@ -4,6 +4,7 @@ from passlib.hash import bcrypt
 from strawberry.types import Info
 from sqlalchemy import func, or_, text
 from sqlalchemy.orm import Session, aliased
+from core.grade.type import GradeLevel
 
 from helpers import jwt, avatar
 from helpers.types import Error, Success
@@ -101,7 +102,7 @@ class Query:
         sort: str = "asc",
         start_at: str = "",
         division_id: int = 0,
-        grade_id: int = 0,
+        grade_filter: GradeLevel = 0,
         end_at: str = "",
     ) -> type.Users:
         db: Session = info.context["db"]
@@ -141,8 +142,8 @@ class Query:
         if division_id:
             query = query.filter(model.User.division_id == division_id)
 
-        if grade_id:
-            query = query.filter(model.User.grade_id == grade_id)
+        if grade_filter:
+            query = query.filter(model.User.grade.has(GradeModel.grade == grade_filter))
 
         if start_at != "" and end_at != "":
             query = query.filter(model.User.created_at.between(start_at, end_at))
@@ -293,7 +294,6 @@ class Query:
             .offset((page - 1) * limit)
             .limit(limit), # type: ignore
         )
-
 
     @strawberry.field(description="Get all avatar url")
     def user_avatars(self) -> list[str]:
