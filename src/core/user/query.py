@@ -102,7 +102,7 @@ class Query:
         sort: str = "asc",
         start_at: str = "",
         division_id: int = 0,
-        grade_filter: GradeLevel = 0,
+        grade_filter: GradeLevel = GradeLevel.NONE,
         end_at: str = "",
     ) -> type.Users:
         db: Session = info.context["db"]
@@ -142,7 +142,7 @@ class Query:
         if division_id:
             query = query.filter(model.User.division_id == division_id)
 
-        if grade_filter:
+        if grade_filter != GradeLevel.NONE:
             query = query.filter(model.User.grade.has(GradeModel.grade == grade_filter))
 
         if start_at != "" and end_at != "":

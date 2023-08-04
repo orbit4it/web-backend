@@ -5,6 +5,7 @@ import strawberry
 
 @strawberry.enum
 class GradeLevel(enum.Enum):
+    NONE = 0
     X = 10
     XI = 11
     XII = 12
