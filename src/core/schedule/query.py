@@ -66,7 +66,8 @@ class Query:
         db: Session = info.context["db"]
 
         query = db.query(
-            model.Schedule.date, func.count(model.Schedule.date).label("count")
+            cast(model.Schedule.date, Date).label("date"),
+            func.count(model.Schedule.date).label("count"),
         )
 
         if start != "" and end != "":

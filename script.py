@@ -31,12 +31,27 @@ def seed_database():
         wa_group_link="https://whatsapp.com",
     )
 
+    division2 = Division(
+        name="Web Development",
+        wa_group_link="https://whatsapp.com",
+    )
+
     schedule = Schedule(
+        title='Pertemuan rutin',
         note="This is schedule note",
         location="D2.4",
         token="TOKEN123",
         attendance_is_open=False,
         division_id=1
+    )
+
+    schedule2 = Schedule(
+        title='Pertemuan rutin',
+        note="This is schedule note",
+        location="C22",
+        token="TOKEN234",
+        attendance_is_open=False,
+        division_id=2
     )
 
     user_pending = UserPending(
@@ -89,7 +104,9 @@ def seed_database():
 
     db.add(grade)
     db.add(division)
+    db.add(division2)
     db.add(schedule)
+    db.add(schedule2)
     db.add(user_pending)
     db.add(user)
     db.add(admin)
